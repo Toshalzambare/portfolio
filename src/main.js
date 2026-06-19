@@ -180,7 +180,7 @@ function initApp() {
       - <span class="cmd-highlight">skills</span>    : Show technical languages and frameworks<br>
       - <span class="cmd-highlight">github</span>    : Open GitHub Profile (External Link)<br>
       - <span class="cmd-highlight">linkedin</span>  : Open LinkedIn Network (External Link)<br>
-      - <span class="cmd-highlight">cv</span>        : View complete CV document<br>
+      - <span class="cmd-highlight">resume</span>    : View complete Resume document<br>
       - <span class="cmd-highlight">contact</span>   : Print email and contact options<br>
       - <span class="cmd-highlight">clear</span>     : Wipe terminal history`,
     about: () => `<strong>Toshal Narendra Zambare</strong><br>
@@ -206,9 +206,13 @@ function initApp() {
       setTimeout(() => window.open('https://www.linkedin.com/in/toshal-zambare/', '_blank'), 500);
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching LinkedIn page in new tab...</span>`;
     },
+    resume: () => {
+      setTimeout(() => window.open('/resume.pdf', '_blank'), 500);
+      return `<span class="success-msg"><i class="fa-solid fa-file-pdf"></i> Opening Resume document...</span>`;
+    },
     cv: () => {
-      setTimeout(() => window.open('/CV.pdf', '_blank'), 500);
-      return `<span class="success-msg"><i class="fa-solid fa-file-pdf"></i> Opening CV document...</span>`;
+      setTimeout(() => window.open('/resume.pdf', '_blank'), 500);
+      return `<span class="success-msg"><i class="fa-solid fa-file-pdf"></i> Opening Resume document...</span>`;
     },
     contact: () => `Connect details:<br>
       - Email: toshalzambare1@gmail.com<br>
@@ -488,7 +492,8 @@ function initApp() {
           <div class="project-card-inner">
             <div class="project-image-placeholder">
               <div class="project-glow"></div>
-              <i class="${project.iconClass} project-large-icon"></i>
+              <img src="/project-images/${project.id}.jpg" alt="${project.title}" class="project-image" onerror="if(this.src.endsWith('.jpg')){this.src=this.src.replace('.jpg','.png');}else if(this.src.endsWith('.png')){this.src=this.src.replace('.png','.jpeg');}else if(this.src.endsWith('.jpeg')){this.src=this.src.replace('.jpeg','.webp');}else{this.style.display='none';}">
+              <i class="${project.iconClass} project-large-icon" style="position: absolute; z-index: 0;"></i>
               <span class="project-year">${project.year}</span>
             </div>
             <div class="project-info">
@@ -620,8 +625,34 @@ function initApp() {
   modalOverlay?.addEventListener('click', closeModal);
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      closeModal();
+      closeResumeModal();
+    }
   });
+
+  // Resume Modal Logic
+  const resumeModal = document.getElementById('resume-modal');
+  const resumeModalClose = document.getElementById('resume-modal-close');
+  const resumeBtn = document.getElementById('btn-resume-preview');
+  const resumeOverlay = resumeModal?.querySelector('.modal-overlay');
+
+  resumeBtn?.addEventListener('click', () => {
+    if (resumeModal) {
+      resumeModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  });
+
+  function closeResumeModal() {
+    if (resumeModal) {
+      resumeModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  resumeModalClose?.addEventListener('click', closeResumeModal);
+  resumeOverlay?.addEventListener('click', closeResumeModal);
 
   // 10. Intersection Observer for Scroll Reveals
   const scrollElements = document.querySelectorAll('.section-header, .about-grid, .skills-category-card, .timeline-item, .achievement-card, .edu-card, .cert-item, .contact-card, .contact-form-container');

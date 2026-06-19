@@ -33,9 +33,9 @@
       </button>
       <nav class="nav-menu" id="nav-menu">
         <a href="#about" class="nav-link">About</a>
-        <a href="#skills" class="nav-link">Skills</a>
         <a href="#experience" class="nav-link">Experience</a>
         <a href="#projects" class="nav-link">Projects</a>
+        <a href="#skills" class="nav-link">Skills</a>
         <a href="#education" class="nav-link">Education</a>
         <a href="#contact" class="nav-link contact-btn">Contact Me</a>
       </nav>
@@ -65,6 +65,7 @@
             <a href="#projects" class="btn btn-primary magnetic">
               <span>View Projects</span> <i class="fa-solid fa-arrow-right"></i>
             </a>
+            <button id="btn-resume-preview" class="btn btn-secondary magnetic">Preview Resume</button>
             <a href="#contact" class="btn btn-secondary magnetic">Get In Touch</a>
           </div>
         </div>
@@ -166,7 +167,65 @@
       </div>
     </section>
 
-    <!-- Skills Section -->
+    <!-- Experience Section -->
+    <section id="experience" class="section experience-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Work Experience</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">Dec 2025 – Feb 2026</div>
+            <div class="timeline-content glass-card">
+              <div class="timeline-header">
+                <h3>Deep Learning & Full Stack Intern</h3>
+                <span class="company-name">AI Leela, Nashik</span>
+              </div>
+              <ul class="timeline-details">
+                <li>Designed and developed an AI-powered SaaS platform (<strong>XeroxSaaS</strong>) using the MERN stack.</li>
+                <li>Built secure backend APIs with JWT authentication and cloud-based file streaming.</li>
+                <li>Integrated LangChain-based AI agents for intelligent document conversion and page analysis.</li>
+                <li>Deployed scalable full-stack infrastructure using Vercel, Render, MongoDB Atlas, and object storage.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section projects-section">
+      <div class="container">
+        <div class="section-header flex-header">
+          <div>
+            <h2 class="section-title">Key Projects</h2>
+            <div class="section-divider"></div>
+          </div>
+          <!-- Project Category Filters -->
+          <div class="project-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="ai-ml">AI & ML</button>
+            <button class="filter-btn" data-filter="web-software">Web & Software</button>
+            <button class="filter-btn" data-filter="iot-games">IoT & Games</button>
+          </div>
+        </div>
+        <!-- Rendered dynamically from main.js -->
+        <div class="projects-grid" id="projects-grid"></div>
+        
+        <div class="more-projects-teaser">
+          <p>Want to see all automation scripts, games, and templates?</p>
+          <a href="https://github.com/Toshalzambare" target="_blank" class="btn btn-secondary magnetic">
+            <i class="fa-brands fa-github"></i> Explore GitHub Repositories
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section (Moved directly below Projects) -->
     <section id="skills" class="section skills-section">
       <div class="container">
         <div class="section-header">
@@ -274,64 +333,6 @@
               <span class="skill-tag">Blockchain</span>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Experience Section -->
-    <section id="experience" class="section experience-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Work Experience</h2>
-          <div class="section-divider"></div>
-        </div>
-        <div class="timeline-container">
-          <div class="timeline-line"></div>
-          
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-date">Dec 2025 – Feb 2026</div>
-            <div class="timeline-content glass-card">
-              <div class="timeline-header">
-                <h3>Deep Learning & Full Stack Intern</h3>
-                <span class="company-name">AI Leela, Nashik</span>
-              </div>
-              <ul class="timeline-details">
-                <li>Designed and developed an AI-powered SaaS platform (<strong>XeroxSaaS</strong>) using the MERN stack.</li>
-                <li>Built secure backend APIs with JWT authentication and cloud-based file streaming.</li>
-                <li>Integrated LangChain-based AI agents for intelligent document conversion and page analysis.</li>
-                <li>Deployed scalable full-stack infrastructure using Vercel, Render, MongoDB Atlas, and object storage.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="section projects-section">
-      <div class="container">
-        <div class="section-header flex-header">
-          <div>
-            <h2 class="section-title">Key Projects</h2>
-            <div class="section-divider"></div>
-          </div>
-          <!-- Project Category Filters -->
-          <div class="project-filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="ai-ml">AI & ML</button>
-            <button class="filter-btn" data-filter="web-software">Web & Software</button>
-            <button class="filter-btn" data-filter="iot-games">IoT & Games</button>
-          </div>
-        </div>
-        <!-- Rendered dynamically from main.js -->
-        <div class="projects-grid" id="projects-grid"></div>
-        
-        <div class="more-projects-teaser">
-          <p>Want to see all automation scripts, games, and templates?</p>
-          <a href="https://github.com/Toshalzambare" target="_blank" class="btn btn-secondary magnetic">
-            <i class="fa-brands fa-github"></i> Explore GitHub Repositories
-          </a>
         </div>
       </div>
     </section>
@@ -579,6 +580,17 @@
       <button class="modal-close" id="modal-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
       <div class="modal-body" id="modal-body">
         <!-- Dynamically loaded content goes here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Resume Preview Modal -->
+  <div class="modal" id="resume-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass-card resume-modal-content">
+      <button class="modal-close" id="resume-modal-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body resume-modal-body">
+        <iframe src="/resume.pdf" width="100%" height="100%" style="border: none; border-radius: 8px;"></iframe>
       </div>
     </div>
   </div>
