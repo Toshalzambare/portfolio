@@ -199,7 +199,7 @@ function initApp() {
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching GitHub profile in new tab...</span>`;
     },
     linkedin: () => {
-      setTimeout(() => window.open('https://www.linkedin.com/in/toshal-zambare-1033282b0/', '_blank'), 500);
+      setTimeout(() => window.open('www.linkedin.com/in/toshal-zambare', '_blank'), 500);
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching LinkedIn page in new tab...</span>`;
     },
     cv: () => {
