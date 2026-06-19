@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Toshal Narendra Zambare - Interactive 3D Portfolio. AI & Data Science Engineer, Full-Stack Developer, ML Engineer, and DevOps Engineer.">
+  <meta name="keywords" content="Toshal Zambare, AI Engineer, Data Science, Full-Stack Developer, ML Engineer, Portfolio, Three.js">
+  <meta name="author" content="Toshal Narendra Zambare">
+  <title>Toshal Narendra Zambare | AI & Data Science Engineer | Portfolio</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- WebGL Background Canvas -->
+  <canvas id="webgl-bg"></canvas>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo" id="nav-logo">
+        <span class="logo-accent">T</span><span>Z</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#skills" class="nav-link">Skills</a>
+        <a href="#experience" class="nav-link">Experience</a>
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#education" class="nav-link">Education</a>
+        <a href="#contact" class="nav-link contact-btn">Contact Me</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+    <!-- Hero Section -->
+    <section id="hero" class="section hero-section">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="badge-container">
+            <span class="badge">Open for Opportunities</span>
+          </div>
+          <h1 class="hero-title glitch-hover" data-text="Toshal Zambare">
+            Hi, I'm <span class="name-gradient">Toshal Zambare</span>
+          </h1>
+          <div class="hero-subtitle-container">
+            <span class="subtitle-text" id="typewriter-text">AI & Data Science Engineer</span>
+            <span class="cursor">|</span>
+          </div>
+          <p class="hero-description">
+            B.E. student in AI & Data Science with proven experience shipping production AI/ML systems, RAG pipelines, and full-stack SaaS products. Passionate about bridging the gap between intelligent algorithms and beautiful, high-performing user interfaces.
+          </p>
+          <div class="hero-actions">
+            <a href="#projects" class="btn btn-primary magnetic">
+              <span>View Projects</span> <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <a href="#contact" class="btn btn-secondary magnetic">Get In Touch</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <!-- Interactive Terminal Card -->
+          <div class="hero-glass-card terminal-card" id="hero-card">
+            <div class="card-header">
+              <div class="card-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="card-title"><i class="fa-solid fa-terminal"></i> toshal@zambare:~</span>
+            </div>
+            <div class="card-body terminal-body" id="terminal-body">
+              <div class="terminal-output" id="terminal-output">
+                <p class="terminal-line system-msg">Welcome to Toshal's interactive shell. Type <span class="cmd-highlight">help</span> to list commands.</p>
+              </div>
+              <div class="terminal-input-line">
+                <span class="terminal-prompt">guest@portfolio:~$</span>
+                <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="type a command..." aria-label="Terminal input">
+              </div>
+            </div>
+            <div class="terminal-shortcuts">
+              <button class="shortcut-btn" data-cmd="about">about</button>
+              <button class="shortcut-btn" data-cmd="projects">projects</button>
+              <button class="shortcut-btn" data-cmd="github">github</button>
+              <button class="shortcut-btn" data-cmd="linkedin">linkedin</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <a href="#about" aria-label="Scroll Down">
+          <span class="mouse">
+            <span class="wheel"></span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Professional Summary</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="about-grid">
+          <div class="about-text-content">
+            <p class="lead-text">
+              I specialize in creating robust artificial intelligence systems and combining them with full-stack capabilities. 
+            </p>
+            <p>
+              Currently pursuing my B.E. in Artificial Intelligence & Data Science at Savitribai Phule Pune University (Expected 2027), I maintain a strong academic record with a **CGPA of 8.7/10**. I actively apply theoretical foundations to industry problems, as demonstrated by my experience building production SaaS platforms and production AI pipelines.
+            </p>
+            <p>
+              As the **Google Developer Groups Campus Lead**, I guide community workshops, mentor developer peers, and contribute actively to open-source systems. My leadership extends to hackathons, where my teams have secured multiple awards.
+            </p>
+            <div class="about-info-grid">
+              <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-val"><a href="mailto:toshalzambare1@gmail.com">toshalzambare1@gmail.com</a></span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Phone:</span>
+                <span class="info-val"><a href="tel:+917666853995">+91-7666853995</a></span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Location:</span>
+                <span class="info-val">Pune, Maharashtra, India</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Role:</span>
+                <span class="info-val">AI/ML & Full-Stack</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="about-stats-container">
+            <div class="stat-card">
+              <span class="stat-num">8.7</span>
+              <span class="stat-label">B.E. CGPA</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">1st</span>
+              <span class="stat-label">GDG Cricketthon</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">8+</span>
+              <span class="stat-label">GitHub Projects</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">GDG</span>
+              <span class="stat-label">Campus Lead</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section skills-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Technical Expertise</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="skills-grid">
+          <!-- AI & ML -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-brain category-icon"></i>
+              <h3>AI & ML</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">LLMs</span>
+              <span class="skill-tag">LangChain</span>
+              <span class="skill-tag">RAG Pipelines</span>
+              <span class="skill-tag">Vector Embeddings</span>
+              <span class="skill-tag">Sentence-Transformers</span>
+              <span class="skill-tag">HuggingFace</span>
+              <span class="skill-tag">PyTorch</span>
+              <span class="skill-tag">TensorFlow</span>
+              <span class="skill-tag">OpenCV</span>
+              <span class="skill-tag">Prompt Engineering</span>
+            </div>
+          </div>
+
+          <!-- Backend Development -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-server category-icon"></i>
+              <h3>Backend</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">FastAPI</span>
+              <span class="skill-tag">Node.js / Express</span>
+              <span class="skill-tag">Celery</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">Async Programming</span>
+              <span class="skill-tag">Socket.io</span>
+            </div>
+          </div>
+
+          <!-- Frontend Development -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-laptop-code category-icon"></i>
+              <h3>Frontend & Cross-Platform</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">React.js</span>
+              <span class="skill-tag">Flutter</span>
+              <span class="skill-tag">FlutterFlow</span>
+              <span class="skill-tag">HTML5 / CSS3</span>
+              <span class="skill-tag">JavaScript / ES6</span>
+            </div>
+          </div>
+
+          <!-- Databases -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-database category-icon"></i>
+              <h3>Databases & Storage</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">Qdrant (Vector DB)</span>
+              <span class="skill-tag">FireStore</span>
+              <span class="skill-tag">MinIO</span>
+            </div>
+          </div>
+
+          <!-- DevOps -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-cloud-arrow-up category-icon"></i>
+              <h3>DevOps & Cloud</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Firebase</span>
+              <span class="skill-tag">AWS</span>
+              <span class="skill-tag">Google Cloud</span>
+              <span class="skill-tag">Vercel</span>
+              <span class="skill-tag">Git</span>
+            </div>
+          </div>
+
+          <!-- Languages -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-code category-icon"></i>
+              <h3>Tools & Languages</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">Dart</span>
+              <span class="skill-tag">C</span>
+              <span class="skill-tag">C++</span>
+              <span class="skill-tag">Java</span>
+              <span class="skill-tag">Pandas / NumPy</span>
+              <span class="skill-tag">IoT / Arduino</span>
+              <span class="skill-tag">Blockchain</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="section experience-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Work Experience</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">Dec 2025 – Feb 2026</div>
+            <div class="timeline-content glass-card">
+              <div class="timeline-header">
+                <h3>Deep Learning & Full Stack Intern</h3>
+                <span class="company-name">AI Leela, Nashik</span>
+              </div>
+              <ul class="timeline-details">
+                <li>Designed and developed an AI-powered SaaS platform (<strong>XeroxSaaS</strong>) using the MERN stack.</li>
+                <li>Built secure backend APIs with JWT authentication and cloud-based file streaming.</li>
+                <li>Integrated LangChain-based AI agents for intelligent document conversion and page analysis.</li>
+                <li>Deployed scalable full-stack infrastructure using Vercel, Render, MongoDB Atlas, and object storage.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section projects-section">
+      <div class="container">
+        <div class="section-header flex-header">
+          <div>
+            <h2 class="section-title">Key Projects</h2>
+            <div class="section-divider"></div>
+          </div>
+          <!-- Project Category Filters -->
+          <div class="project-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="ai-ml">AI & ML</button>
+            <button class="filter-btn" data-filter="web-software">Web & Software</button>
+            <button class="filter-btn" data-filter="iot-games">IoT & Games</button>
+          </div>
+        </div>
+        <!-- Rendered dynamically from main.js -->
+        <div class="projects-grid" id="projects-grid"></div>
+        
+        <div class="more-projects-teaser">
+          <p>Want to see all automation scripts, games, and templates?</p>
+          <a href="https://github.com/Toshalzambare" target="_blank" class="btn btn-secondary magnetic">
+            <i class="fa-brands fa-github"></i> Explore GitHub Repositories
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievements & Leadership Section -->
+    <section id="achievements" class="section achievements-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Achievements & Leadership</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="achievements-grid">
+          <div class="achievement-card glass-card">
+            <div class="achievement-icon">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3>1st Place — Cricketthon</h3>
+            <span class="achievement-meta">GDG Nashik, 2026</span>
+            <p>Won first place in the hackathon organized by Google Developer Group Nashik, building a production-grade application within limited hours.</p>
+          </div>
+
+          <div class="achievement-card glass-card">
+            <div class="achievement-icon">
+              <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <h3>Flutter Co-Lead</h3>
+            <span class="achievement-meta">GDGC at MET (2024–25)</span>
+            <p>Co-led the Flutter development wing of the Google Developer Groups on Campus. Conducted hands-on sessions and mentored 100+ peers in building mobile applications.</p>
+          </div>
+
+          <div class="achievement-card glass-card">
+            <div class="achievement-icon">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <h3>3rd Place — HackFusion</h3>
+            <span class="achievement-meta">HackFusion Hackathon, 2025</span>
+            <p>Awarded third place out of numerous regional teams for conceptualizing and implementing an automated software integration helper.</p>
+          </div>
+
+          <div class="achievement-card glass-card">
+            <div class="achievement-icon">
+              <i class="fa-solid fa-cloud"></i>
+            </div>
+            <h3>Cloud Lead & Open Source</h3>
+            <span class="achievement-meta">GDGC at MET</span>
+            <p>Served as the cloud computing department lead. Contributed actively to multiple open-source repositories and cloud deployment tooling guides.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education & Certifications Section -->
+    <section id="education" class="section education-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Education & Credentials</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="education-grid">
+          <!-- Academic Education -->
+          <div class="edu-card-container">
+            <h3 class="subsection-title"><i class="fa-solid fa-graduation-cap"></i> Education</h3>
+            <div class="edu-card glass-card">
+              <div class="edu-card-header">
+                <h4>Bachelor of Engineering (B.E.)</h4>
+                <span class="edu-gpa">CGPA 8.7/10</span>
+              </div>
+              <p class="edu-field">Artificial Intelligence & Data Science (Pursuing)</p>
+              <p class="edu-inst">Savitribai Phule Pune University (2019 Pattern)</p>
+              <span class="edu-timeline">Expected 2027</span>
+            </div>
+            <div class="edu-card glass-card">
+              <div class="edu-card-header">
+                <h4>Higher Secondary (Class 12)</h4>
+                <span class="edu-gpa">72.67%</span>
+              </div>
+              <p class="edu-field">Science major</p>
+              <p class="edu-inst">Ord. Factory High School & Junior College</p>
+              <span class="edu-timeline">Graduated 2023</span>
+            </div>
+            <div class="edu-card glass-card">
+              <div class="edu-card-header">
+                <h4>Secondary School (Class 10)</h4>
+                <span class="edu-gpa">80.80%</span>
+              </div>
+              <p class="edu-field">General Curriculum</p>
+              <p class="edu-inst">ST. ALOYSIUS HIGH SCHOOL</p>
+              <span class="edu-timeline">Graduated 2021</span>
+            </div>
+          </div>
+
+          <!-- Certifications & Personal Details -->
+          <div class="cert-card-container">
+            <h3 class="subsection-title"><i class="fa-solid fa-certificate"></i> Certifications</h3>
+            <div class="certs-list">
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>Python for Data Science & DSA</h4>
+                  <span class="cert-org">NPTEL | 2024</span>
+                </div>
+              </div>
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>Data Structures & Algorithms in Python</h4>
+                  <span class="cert-org">NPTEL | 2024</span>
+                </div>
+              </div>
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>AWS Cloud Foundations</h4>
+                  <span class="cert-org">AWS Cloud Internship | 2024</span>
+                </div>
+              </div>
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>Java Programming Certification</h4>
+                  <span class="cert-org">Oracle Academy | 2024</span>
+                </div>
+              </div>
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>AI-ML Virtual Internship</h4>
+                  <span class="cert-org">EduSkills (Google for Developers) | 2024</span>
+                </div>
+              </div>
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>Name Generator with TensorFlow</h4>
+                  <span class="cert-org">Coursera | 2024</span>
+                </div>
+              </div>
+              <div class="cert-item glass-card">
+                <i class="fa-solid fa-square-check cert-check"></i>
+                <div class="cert-info">
+                  <h4>C++ & C, Python, C Programming</h4>
+                  <span class="cert-org">Spoken Tutorial IIT Bombay | 2024 - 2025</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Personal Details Block -->
+            <div class="edu-card glass-card personal-details-card">
+              <h4 class="modal-section-title"><i class="fa-solid fa-user-tag"></i> Profile Details</h4>
+              <div class="details-list">
+                <div class="detail-row">
+                  <span class="det-lbl">Date of Birth:</span>
+                  <span class="det-val">13th May 2006</span>
+                </div>
+                <div class="detail-row">
+                  <span class="det-lbl">Languages:</span>
+                  <span class="det-val">English, Hindi, Marathi</span>
+                </div>
+                <div class="detail-row">
+                  <span class="det-lbl">Hobbies:</span>
+                  <span class="det-val">Coding, Gaming, Tech Research</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section contact-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Get In Touch</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-card glass-card">
+            <h3>Let's collaborate on your next project</h3>
+            <p>I am available for internships, contract roles, and full-stack/AI collaboration. Send a message, and I'll get back to you within 24 hours.</p>
+            
+            <div class="contact-details">
+              <div class="contact-detail-item">
+                <i class="fa-solid fa-envelope"></i>
+                <div>
+                  <h4>Email</h4>
+                  <a href="mailto:toshalzambare1@gmail.com" class="magnetic">toshalzambare1@gmail.com</a>
+                </div>
+              </div>
+              <div class="contact-detail-item">
+                <i class="fa-solid fa-phone"></i>
+                <div>
+                  <h4>Phone</h4>
+                  <a href="tel:+917666853995" class="magnetic">+91-7666853995</a>
+                </div>
+              </div>
+              <div class="contact-detail-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <div>
+                  <h4>Location</h4>
+                  <span>Pune, Maharashtra, India</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="social-links">
+              <a href="https://github.com/Toshalzambare" target="_blank" aria-label="GitHub" class="magnetic"><i class="fa-brands fa-github"></i></a>
+              <a href="https://www.linkedin.com/in/toshal-zambare-1033282b0/" target="_blank" aria-label="LinkedIn" class="magnetic"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
+          </div>
+
+          <div class="contact-form-container glass-card">
+            <form id="contact-form" class="contact-form">
+              <div class="form-group">
+                <label for="form-name">Name</label>
+                <input type="text" id="form-name" name="name" required placeholder="John Doe">
+              </div>
+              <div class="form-group">
+                <label for="form-email">Email</label>
+                <input type="email" id="form-email" name="email" required placeholder="john@example.com">
+              </div>
+              <div class="form-group">
+                <label for="form-subject">Subject</label>
+                <input type="text" id="form-subject" name="subject" required placeholder="Collaboration Opportunity">
+              </div>
+              <div class="form-group">
+                <label for="form-message">Message</label>
+                <textarea id="form-message" name="message" required rows="5" placeholder="Let's build something great..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-submit magnetic">
+                <span>Send Message</span> <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </form>
+            <div id="form-status" class="form-status"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Project Modal (Details Popup) -->
+  <div class="modal" id="project-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass-card">
+      <button class="modal-close" id="modal-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body" id="modal-body">
+        <!-- Dynamically loaded content goes here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Toshal Narendra Zambare. All Rights Reserved.</p>
+      <p class="footer-sub">Designed with precision using Three.js & Custom CSS</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
