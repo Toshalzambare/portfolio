@@ -97,6 +97,10 @@ function initApp() {
 
   // 5. 3D Card Tilt Effect Function
   function applyTiltEffect() {
+    // Avoid card tilt sticking on touch screens
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (isTouch) return;
+
     const tiltElements = [
       document.getElementById('hero-card'),
       ...document.querySelectorAll('.project-card'),
@@ -199,7 +203,7 @@ function initApp() {
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching GitHub profile in new tab...</span>`;
     },
     linkedin: () => {
-      setTimeout(() => window.open('https://www.linkedin.com/in/toshal-zambare-1033282b0/', '_blank'), 500);
+      setTimeout(() => window.open('https://www.linkedin.com/in/toshal-zambare/', '_blank'), 500);
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching LinkedIn page in new tab...</span>`;
     },
     cv: () => {
