@@ -217,7 +217,7 @@ function initApp() {
     contact: () => `Connect details:<br>
       - Email: toshalzambare1@gmail.com<br>
       - Phone: +91-7666853995<br>
-      - Location: Pune, Maharashtra, India`,
+      - Location: Nashik, Maharashtra, India`,
     clear: null
   };
 
