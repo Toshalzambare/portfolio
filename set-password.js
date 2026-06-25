@@ -9,61 +9,40 @@ const __dirname = path.dirname(__filename);
 
 // Helper to ask a question via terminal
 function askQuestion(query, isPassword = false) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  return new Promise((resolve) => {
-    if (!isPassword) {
+  if (!isPassword) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    return new Promise((resolve) => {
       rl.question(query, (answer) => {
         rl.close();
         resolve(answer);
       });
-    } else {
-      // Custom masking for password input in CLI
+    });
+  } else {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    return new Promise((resolve) => {
       process.stdout.write(query);
       
-      const stdin = process.stdin;
-      stdin.resume();
-      stdin.setEncoding('utf8');
-      
-      let password = '';
-      
-      const onData = (char) => {
-        char = char + '';
-        switch (char) {
-          case '\n':
-          case '\r':
-          case '\u0004':
-            stdin.pause();
-            stdin.removeListener('data', onData);
-            process.stdout.write('\n');
-            rl.close();
-            resolve(password);
-            break;
-          case '\u0003': // Ctrl+C
-            process.exit();
-            break;
-          default:
-            // Backspace handling
-            if (char.charCodeAt(0) === 127) {
-              if (password.length > 0) {
-                password = password.slice(0, -1);
-                // Clear the last asterisk
-                process.stdout.write('\b \b');
-              }
-            } else {
-              password += char;
-              process.stdout.write('*');
-            }
-            break;
+      // Override output writer to write asterisks
+      rl._writeToOutput = function _writeToOutput(stringToWrite) {
+        if (stringToWrite === '\r\n' || stringToWrite === '\n' || stringToWrite === '\r') {
+          process.stdout.write(stringToWrite);
+          return;
         }
+        process.stdout.write('*');
       };
       
-      stdin.on('data', onData);
-    }
-  });
+      rl.question('', (answer) => {
+        rl.close();
+        resolve(answer);
+      });
+    });
+  }
 }
 
 // PBKDF2 Hashing Function
