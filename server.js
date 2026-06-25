@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { put, del, list, get } from '@vercel/blob';
+import { put, del, list, get, head } from '@vercel/blob';
 
 dotenv.config();
 
@@ -134,13 +134,15 @@ async function getMetadata() {
   
   if (isVercelBlobEnabled()) {
     try {
-      console.log('[Blob Debug] getMetadata: Listing blobs with prefix "private-uploads/metadata.json"');
-      const { blobs } = await list({ prefix: 'private-uploads/metadata.json' });
-      console.log('[Blob Debug] getMetadata: Found', blobs.length, 'metadata blobs');
-      if (blobs.length === 0) return defaultMeta;
+      console.log('[Blob Debug] getMetadata: Reading metadata via get(pathname)');
+      const blobData = await get('private-uploads/metadata.json', { access: 'private' });
       
-      // Use SDK get() for reading blobs (works with both private and public stores)
-      const blobData = await get(blobs[0].url, { access: 'private' });
+      // get() returns null if the blob doesn't exist
+      if (!blobData) {
+        console.log('[Blob Debug] getMetadata: No metadata blob found, returning defaults');
+        return defaultMeta;
+      }
+      
       const arrayBuf = await new Response(blobData.stream).arrayBuffer();
       const decrypted = decrypt(Buffer.from(arrayBuf));
       return JSON.parse(decrypted.toString('utf8'));
@@ -172,6 +174,7 @@ async function saveMetadata(metadata) {
     const result = await put('private-uploads/metadata.json', encrypted, {
       access: 'private',
       addRandomSuffix: false,
+      allowOverwrite: true,
       contentType: 'application/octet-stream',
     });
     console.log('[Blob Debug] saveMetadata: Saved to', result.url);
@@ -203,13 +206,13 @@ async function saveFile(id, buffer) {
 // Get decrypted file buffer
 async function getFile(id) {
   if (isVercelBlobEnabled()) {
-    console.log(`[Blob Debug] getFile: Looking up "private-uploads/${id}" in Blob`);
-    const { blobs } = await list({ prefix: `private-uploads/${id}` });
-    if (blobs.length === 0) throw new Error('File not found in Vercel Blob');
+    const blobPath = `private-uploads/${id}`;
+    console.log(`[Blob Debug] getFile: Reading "${blobPath}" via get(pathname)`);
     
-    // Use SDK get() to read blob data (works for both public and private stores)
-    console.log(`[Blob Debug] getFile: Found blob at ${blobs[0].url}, fetching via get()`);
-    const blobData = await get(blobs[0].url, { access: 'private' });
+    const blobData = await get(blobPath, { access: 'private' });
+    if (!blobData) throw new Error('File not found in Vercel Blob');
+    
+    console.log(`[Blob Debug] getFile: Got blob, reading stream`);
     const arrayBuf = await new Response(blobData.stream).arrayBuffer();
     return decrypt(Buffer.from(arrayBuf));
   } else {
@@ -224,9 +227,15 @@ async function getFile(id) {
 // Delete file
 async function removeFile(id) {
   if (isVercelBlobEnabled()) {
-    const { blobs } = await list({ prefix: `private-uploads/${id}` });
-    if (blobs.length > 0) {
-      await del(blobs[0].url);
+    const blobPath = `private-uploads/${id}`;
+    console.log(`[Blob Debug] removeFile: Resolving "${blobPath}" via head()`);
+    try {
+      const blobMeta = await head(blobPath);
+      console.log(`[Blob Debug] removeFile: Deleting ${blobMeta.url}`);
+      await del(blobMeta.url);
+    } catch (e) {
+      // head() throws BlobNotFoundError if not found — silently skip
+      console.log(`[Blob Debug] removeFile: Blob "${blobPath}" not found, skipping`);
     }
   } else {
     const filePath = path.join(UPLOADS_DIR, id);
@@ -424,16 +433,39 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
 
   // Infer content type
   const ext = path.extname(result.name).toLowerCase();
+  const imageExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg'];
+  
+  // For images: wrap in a styled HTML page so they display properly in the iframe
+  if (imageExts.includes(ext)) {
+    const base64 = result.buffer.toString('base64');
+    let mimeType = 'image/png';
+    if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+    else if (ext === '.webp') mimeType = 'image/webp';
+    else if (ext === '.gif') mimeType = 'image/gif';
+    else if (ext === '.bmp') mimeType = 'image/bmp';
+    else if (ext === '.svg') mimeType = 'image/svg+xml';
+    
+    const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0b0f19; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 4px; }
+</style></head><body>
+  <img src="data:${mimeType};base64,${base64}" alt="${encodeURIComponent(result.name)}" />
+</body></html>`;
+    
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+    return res.send(html);
+  }
+  
+  // For non-image files: send raw content with correct mime type
   let contentType = 'application/octet-stream';
   if (ext === '.pdf') contentType = 'application/pdf';
   else if (ext === '.txt' || ext === '.md') contentType = 'text/plain; charset=utf-8';
-  else if (ext === '.png') contentType = 'image/png';
-  else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
-  else if (ext === '.webp') contentType = 'image/webp';
   else if (ext === '.json') contentType = 'application/json';
 
   res.setHeader('Content-Type', contentType);
-  // Set Content-Disposition to inline for viewing inside an iframe
   res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(result.name)}"`);
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   return res.send(result.buffer);
