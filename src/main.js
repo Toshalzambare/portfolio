@@ -277,6 +277,32 @@ function initApp() {
   adminPreviewClose?.addEventListener('click', closeAdminPreviewModal);
   adminPreviewOverlay?.addEventListener('click', closeAdminPreviewModal);
 
+  // Auto-fit image previews in the iframe to prevent zoomed-in layouts
+  adminPreviewIframe?.addEventListener('load', () => {
+    try {
+      const iframeDoc = adminPreviewIframe.contentDocument || adminPreviewIframe.contentWindow.document;
+      if (iframeDoc) {
+        const img = iframeDoc.querySelector('img');
+        if (img) {
+          iframeDoc.body.style.margin = '0';
+          iframeDoc.body.style.display = 'flex';
+          iframeDoc.body.style.justifyContent = 'center';
+          iframeDoc.body.style.alignItems = 'center';
+          iframeDoc.body.style.height = '100vh';
+          iframeDoc.body.style.backgroundColor = '#0b0f19';
+          
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '100%';
+          img.style.objectFit = 'contain';
+          img.style.display = 'block';
+          img.style.margin = 'auto';
+        }
+      }
+    } catch (e) {
+      // Ignore cross-origin warnings
+    }
+  });
+
   // File Picker Listener (Multi-upload support)
   fileInput?.addEventListener('change', async () => {
     if (!fileInput.files || fileInput.files.length === 0) return;

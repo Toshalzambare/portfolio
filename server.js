@@ -16,6 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1); // Trust Vercel's reverse proxy for correct client IP detection
 const PORT = process.env.PORT || 5000;
 
 // Initialize file uploads directory (use writable /tmp on Vercel to prevent read-only filesystem crash)
