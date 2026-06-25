@@ -464,10 +464,61 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
     return res.send(html);
   }
   
-  // For non-image files: send raw content with correct mime type
+  // For PDFs: Mobile browsers often fail to display inline PDFs in iframes.
+  // We use Mozilla's PDF.js to render the PDF reliably on all devices (mobile + desktop).
+  if (ext === '.pdf') {
+    const downloadUrl = `/api/admin/files/${req.params.index}/download`;
+    const html = `<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PDF Preview</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0b0f19; color: white; display: flex; flex-direction: column; align-items: center; padding: 10px; font-family: sans-serif; min-height: 100dvh; overflow-y: auto; }
+    #pdf-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    canvas { max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); background: white; }
+    .loading { margin-top: 20vh; font-size: 1.1rem; opacity: 0.7; }
+  </style>
+</head><body>
+  <div id="pdf-container"><div class="loading">Loading PDF...</div></div>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    
+    // Fetch PDF securely via the download endpoint (cookies are sent automatically)
+    const url = '${downloadUrl}';
+    const container = document.getElementById('pdf-container');
+    
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      container.innerHTML = ''; // clear loading text
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+          // Render at 1.5x scale for better text crispness on high DPI screens
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          container.appendChild(canvas);
+          page.render({ canvasContext: context, viewport: viewport });
+        });
+      }
+    }).catch(err => {
+      container.innerHTML = '<div class="loading">Error loading PDF. <br><br><a href="' + url + '" style="color: #64ffda; text-decoration: none;">Download File Instead</a></div>';
+      console.error(err);
+    });
+  </script>
+</body></html>`;
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+    return res.send(html);
+  }
+  
+  // For other non-image files: send raw content with correct mime type
   let contentType = 'application/octet-stream';
-  if (ext === '.pdf') contentType = 'application/pdf';
-  else if (ext === '.txt' || ext === '.md') contentType = 'text/plain; charset=utf-8';
+  if (ext === '.txt' || ext === '.md') contentType = 'text/plain; charset=utf-8';
   else if (ext === '.json') contentType = 'application/json';
 
   res.setHeader('Content-Type', contentType);
