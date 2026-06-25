@@ -115,16 +115,17 @@ function decrypt(combinedBuffer) {
 // Storage Adapters (Local Filesystem vs Vercel Blob)
 // ----------------------------------------------------
 const isVercelBlobEnabled = () => {
-  // Vercel injects OIDC tokens automatically for linked Blob stores
-  const hasOIDC = !!(process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID);
-  const hasToken = !!process.env.BLOB_READ_WRITE_TOKEN;
-  return hasOIDC || hasToken;
+  // BLOB_STORE_ID is set when a Blob store is linked to the project.
+  // The @vercel/blob SDK internally resolves auth via its @vercel/oidc dependency
+  // at request time — we do NOT need VERCEL_OIDC_TOKEN in the environment.
+  // BLOB_READ_WRITE_TOKEN is the legacy static token fallback.
+  return !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 };
 
 // Log storage mode at startup for debugging
 console.log('[Blob Debug] BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
-console.log('[Blob Debug] VERCEL_OIDC_TOKEN set:', !!process.env.VERCEL_OIDC_TOKEN);
 console.log('[Blob Debug] BLOB_STORE_ID set:', !!process.env.BLOB_STORE_ID);
+console.log('[Blob Debug] VERCEL env:', !!process.env.VERCEL);
 console.log('[Blob Debug] isVercelBlobEnabled():', isVercelBlobEnabled());
 
 // Get metadata file content
