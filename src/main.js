@@ -167,11 +167,21 @@ function initApp() {
   // Initial magnetic trigger
   applyMagneticEffect();
 
-  // 7. Interactive Terminal Shell Emulator
+  // 7. Interactive Terminal Shell Emulator (Secure Admin Mode Integrated)
   const terminalInput = document.getElementById('terminal-input');
   const terminalOutput = document.getElementById('terminal-output');
   const terminalBody = document.getElementById('terminal-body');
   const shortcutButtons = document.querySelectorAll('.shortcut-btn');
+  const terminalPromptLabel = document.getElementById('terminal-prompt-label');
+  const fileInput = document.getElementById('terminal-file-input');
+
+  // Preview Modal Elements
+  const adminPreviewModal = document.getElementById('admin-preview-modal');
+  const adminPreviewClose = document.getElementById('admin-preview-close');
+  const adminPreviewIframe = document.getElementById('admin-preview-iframe');
+  const adminPreviewOverlay = adminPreviewModal?.querySelector('.modal-overlay');
+
+  let cliMode = 'GUEST'; // 'GUEST', 'PASSWORD_PROMPT', 'ADMIN'
 
   const terminalCommands = {
     help: () => `Available commands:<br>
@@ -192,6 +202,7 @@ function initApp() {
       - <strong>RAG Hub</strong> (Vector ingestion engine with reranking filters)<br>
       - <strong>Real-time 3D Agent</strong> (Unity & offline speech loop)<br>
       - <strong>Healthcare Optimization</strong> (Hospital resource tracking)<br>
+      - <strong>Brick Breaker Game</strong> (OpenGL C++)<br>
       Type <span class="cmd-highlight">projects</span> or click shortcuts to see more.`,
     skills: () => `Technical Skill Overview:<br>
       - AI/ML   : LLMs, LangChain, RAG, Qdrant, PyTorch, OpenCV<br>
@@ -221,6 +232,15 @@ function initApp() {
     clear: null
   };
 
+  const adminCommandsHelp = () => `Admin commands:<br>
+    - <span class="cmd-highlight">up</span>         : Securely upload private file<br>
+    - <span class="cmd-highlight">ls</span>         : List private files with sequential indices<br>
+    - <span class="cmd-highlight">vw &lt;idx&gt;</span>     : Securely preview file in app (e.g. vw 1)<br>
+    - <span class="cmd-highlight">dl &lt;idx&gt;</span>     : Securely download file (e.g. dl 1)<br>
+    - <span class="cmd-highlight">del &lt;idx&gt;</span>    : Delete private file (e.g. del 1)<br>
+    - <span class="cmd-highlight">ex</span>         : Exit admin session and log out<br>
+    - <span class="cmd-highlight">clear</span>      : Wipe terminal history`;
+
   function printLine(text, className = 'system-msg') {
     if (!terminalOutput) return;
     const line = document.createElement('p');
@@ -234,13 +254,232 @@ function initApp() {
     }
   }
 
-  function handleCommand(cmdText) {
-    const cleanCmd = cmdText.trim().toLowerCase();
+  // Ensure that refreshing the page always logs out and resets to Guest Mode
+  async function clearSessionOnLoad() {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch (err) {
+      // Fail silently
+    }
+  }
+  clearSessionOnLoad();
+
+  // Close Admin Preview Modal Function
+  function closeAdminPreviewModal() {
+    if (adminPreviewModal) {
+      adminPreviewModal.classList.remove('active');
+      if (adminPreviewIframe) adminPreviewIframe.src = 'about:blank';
+      document.body.style.overflow = '';
+    }
+  }
+
+  adminPreviewClose?.addEventListener('click', closeAdminPreviewModal);
+  adminPreviewOverlay?.addEventListener('click', closeAdminPreviewModal);
+
+  // File Picker Listener (Multi-upload support)
+  fileInput?.addEventListener('change', async () => {
+    if (!fileInput.files || fileInput.files.length === 0) return;
+    const files = Array.from(fileInput.files);
     
-    if (cleanCmd === '') return;
+    printLine(`Preparing to encrypt and upload ${files.length} file(s)...`, 'system-msg');
     
-    // Print user command echo
-    printLine(`guest@portfolio:~$ ${cmdText}`, 'user-cmd');
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      printLine(`[${i + 1}/${files.length}] Uploading "${file.name}"...`, 'system-msg');
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const response = await fetch('/api/admin/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          printLine(`<span class="success-msg"><i class="fa-solid fa-circle-check"></i> [${i + 1}/${files.length}] ${data.message}</span>`, 'info-msg');
+        } else {
+          printLine(`<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> [${i + 1}/${files.length}] Error: ${data.error || 'Failed to upload.'}</span>`, 'error-msg');
+        }
+      } catch (err) {
+        printLine(`<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> [${i + 1}/${files.length}] Network transmission failure.</span>`, 'error-msg');
+      }
+    }
+    
+    fileInput.value = ''; // Clear picker
+  });
+
+  async function handleCommand(cmdText) {
+    const rawCmd = cmdText.trim();
+    const cleanCmd = rawCmd.toLowerCase();
+    
+    if (rawCmd === '') return;
+
+    // 1. Password Prompt Mode Handling (Masked)
+    if (cliMode === 'PASSWORD_PROMPT') {
+      // Revert terminal visual state
+      if (terminalInput) {
+        terminalInput.type = 'text';
+        terminalInput.placeholder = 'type a command...';
+      }
+      if (terminalPromptLabel) {
+        terminalPromptLabel.textContent = 'guest@portfolio:~$';
+      }
+      
+      printLine('Password: [HIDDEN]', 'user-cmd');
+      printLine('Verifying authorization...', 'system-msg');
+      
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: rawCmd })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+          cliMode = 'ADMIN';
+          if (terminalPromptLabel) {
+            terminalPromptLabel.textContent = 'admin@portfolio:~$';
+          }
+          printLine('<span class="success-msg"><i class="fa-solid fa-unlock-keyhole"></i> Authorization Verified. Secure Admin mode initialized. Type <span class="cmd-highlight">help</span> for commands.</span>', 'info-msg');
+        } else {
+          cliMode = 'GUEST';
+          printLine(`<span class="error-msg"><i class="fa-solid fa-lock"></i> Authorization Denied: ${data.error || 'Invalid credentials.'}</span>`, 'error-msg');
+        }
+      } catch (err) {
+        cliMode = 'GUEST';
+        printLine('<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Authentication server offline.</span>', 'error-msg');
+      }
+      return;
+    }
+
+    // 2. Admin Mode Handling
+    if (cliMode === 'ADMIN') {
+      printLine(`admin@portfolio:~$ ${rawCmd}`, 'user-cmd');
+      
+      if (cleanCmd === 'clear') {
+        if (terminalOutput) terminalOutput.innerHTML = '';
+        printLine('Terminal log wiped.', 'system-msg');
+        return;
+      }
+      
+      if (cleanCmd === 'help') {
+        printLine(adminCommandsHelp(), 'info-msg');
+        return;
+      }
+      
+      if (cleanCmd === 'ex') {
+        printLine('Terminating secure session...', 'system-msg');
+        try {
+          await fetch('/api/admin/logout', { method: 'POST' });
+        } catch (err) {}
+        cliMode = 'GUEST';
+        if (terminalPromptLabel) {
+          terminalPromptLabel.textContent = 'guest@portfolio:~$';
+        }
+        printLine('Logged out. Admin session terminated.', 'info-msg');
+        return;
+      }
+      
+      if (cleanCmd === 'up') {
+        if (fileInput) {
+          printLine('Launching secure file picker...', 'system-msg');
+          fileInput.click();
+        } else {
+          printLine('<span class="error-msg">Upload utility failed to initiate.</span>', 'error-msg');
+        }
+        return;
+      }
+      
+      if (cleanCmd === 'ls') {
+        printLine('Retrieving file directories...', 'system-msg');
+        try {
+          const res = await fetch('/api/admin/files');
+          const data = await res.json();
+          if (res.ok && data.files) {
+            if (data.files.length === 0) {
+              printLine('No files stored in private cloud storage.', 'info-msg');
+            } else {
+              let listHtml = '<strong>Stored Encrypted Files:</strong><br>';
+              data.files.forEach(f => {
+                const dateStr = new Date(f.uploadedAt).toLocaleString();
+                listHtml += `[${f.index}] <span class="cmd-highlight">${f.name}</span> <span style="opacity: 0.6; font-size: 0.85em;">(Uploaded: ${dateStr})</span><br>`;
+              });
+              printLine(listHtml, 'info-msg');
+            }
+          } else {
+            printLine(`<span class="error-msg">Failed to retrieve files: ${data.error || 'Server error'}</span>`, 'error-msg');
+          }
+        } catch (err) {
+          printLine('<span class="error-msg">Failed to contact retrieval API.</span>', 'error-msg');
+        }
+        return;
+      }
+
+      // Check for index-based commands: vw <idx>, dl <idx>, del <idx>
+      const parts = cleanCmd.split(/\s+/);
+      const action = parts[0];
+      const indexStr = parts[1];
+      const targetIdx = parseInt(indexStr, 10);
+      
+      if ((action === 'vw' || action === 'dl' || action === 'del')) {
+        if (isNaN(targetIdx) || targetIdx <= 0) {
+          printLine('<span class="error-msg">Syntax Error: Target file index must be a positive integer. e.g. vw 1</span>', 'error-msg');
+          return;
+        }
+        
+        if (action === 'vw') {
+          printLine(`Opening secure stream for file [${targetIdx}]...`, 'system-msg');
+          if (adminPreviewIframe && adminPreviewModal) {
+            // Set source directly to the secure preview endpoint
+            adminPreviewIframe.src = `/api/admin/files/${targetIdx}/preview`;
+            adminPreviewModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            printLine('<span class="success-msg">Preview loaded.</span>', 'info-msg');
+          }
+          return;
+        }
+        
+        if (action === 'dl') {
+          printLine(`Requesting decryption sequence for file [${targetIdx}]...`, 'system-msg');
+          try {
+            const dlAnchor = document.createElement('a');
+            dlAnchor.href = `/api/admin/files/${targetIdx}/download`;
+            dlAnchor.style.display = 'none';
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            document.body.removeChild(dlAnchor);
+            printLine('<span class="success-msg">Download sequence triggered successfully.</span>', 'info-msg');
+          } catch (err) {
+            printLine('<span class="error-msg">Download request failed to dispatch.</span>', 'error-msg');
+          }
+          return;
+        }
+        
+        if (action === 'del') {
+          printLine(`Requesting removal of file [${targetIdx}]...`, 'system-msg');
+          try {
+            const res = await fetch(`/api/admin/files/${targetIdx}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (res.ok) {
+              printLine(`<span class="success-msg"><i class="fa-solid fa-trash-can"></i> File [${targetIdx}] deleted successfully.</span>`, 'info-msg');
+            } else {
+              printLine(`<span class="error-msg">Deletion aborted: ${data.error || 'Server error'}</span>`, 'error-msg');
+            }
+          } catch (err) {
+            printLine('<span class="error-msg">Failed to dispatch deletion payload.</span>', 'error-msg');
+          }
+          return;
+        }
+      }
+      
+      printLine(`Command not found: "${rawCmd}". Type <span class="cmd-highlight">help</span> for options.`, 'error-msg');
+      return;
+    }
+
+    // 3. Guest Mode Handling
+    printLine(`guest@portfolio:~$ ${rawCmd}`, 'user-cmd');
     
     if (cleanCmd === 'clear') {
       if (terminalOutput) terminalOutput.innerHTML = '';
@@ -248,25 +487,42 @@ function initApp() {
       return;
     }
     
+    // Secret Admin Trigger
+    if (cleanCmd === 'x1') {
+      cliMode = 'PASSWORD_PROMPT';
+      if (terminalPromptLabel) {
+        terminalPromptLabel.textContent = 'Password: ';
+      }
+      if (terminalInput) {
+        terminalInput.value = '';
+        terminalInput.type = 'password';
+        terminalInput.placeholder = '';
+      }
+      return;
+    }
+    
     if (cleanCmd in terminalCommands) {
       const response = terminalCommands[cleanCmd]();
       printLine(response, 'info-msg');
     } else {
-      printLine(`Command not found: "${cmdText}". Type <span class="cmd-highlight">help</span> for options.`, 'error-msg');
+      printLine(`Command not found: "${rawCmd}". Type <span class="cmd-highlight">help</span> for options.`, 'error-msg');
     }
   }
 
-  terminalInput?.addEventListener('keydown', (e) => {
+  terminalInput?.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter') {
       const command = terminalInput.value;
-      handleCommand(command);
       terminalInput.value = '';
+      await handleCommand(command);
     }
   });
 
   // Shortcut clicks with auto-typing visual simulation
   shortcutButtons.forEach(btn => {
     btn.addEventListener('click', () => {
+      // Do not allow shortcut typing in password prompt or admin mode
+      if (cliMode !== 'GUEST') return;
+      
       const cmd = btn.getAttribute('data-cmd');
       if (!cmd || !terminalInput) return;
       
@@ -276,14 +532,14 @@ function initApp() {
       let index = 0;
       btn.disabled = true;
       
-      const typeInterval = setInterval(() => {
+      const typeInterval = setInterval(async () => {
         if (index < cmd.length) {
           terminalInput.value += cmd[index];
           index++;
         } else {
           clearInterval(typeInterval);
-          setTimeout(() => {
-            handleCommand(cmd);
+          setTimeout(async () => {
+            await handleCommand(cmd);
             terminalInput.value = '';
             btn.disabled = false;
           }, 200);
@@ -628,6 +884,7 @@ function initApp() {
     if (e.key === 'Escape') {
       closeModal();
       closeResumeModal();
+      closeAdminPreviewModal();
     }
   });
 

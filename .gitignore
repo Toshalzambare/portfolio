@@ -18,6 +18,11 @@ jspm_packages/
 dist/
 dist-ssr/
 *.local
+.env
+
+# Private credentials and uploads
+/private_uploads/
+/scratch/
 
 # Editor directories and files
 .vscode/*

@@ -90,8 +90,9 @@
                 <p class="terminal-line system-msg">Welcome to Toshal's interactive shell. Type <span class="cmd-highlight">help</span> to list commands.</p>
               </div>
               <div class="terminal-input-line">
-                <span class="terminal-prompt">guest@portfolio:~$</span>
+                <span class="terminal-prompt" id="terminal-prompt-label">guest@portfolio:~$</span>
                 <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="type a command..." aria-label="Terminal input">
+                <input type="file" id="terminal-file-input" style="display: none;" multiple>
               </div>
             </div>
             <div class="terminal-shortcuts">
@@ -596,6 +597,17 @@
       <button class="modal-close" id="resume-modal-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
       <div class="modal-body resume-modal-body">
         <iframe src="/resume.pdf" width="100%" height="100%" style="border: none; border-radius: 8px;"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin File Preview Modal -->
+  <div class="modal" id="admin-preview-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass-card resume-modal-content">
+      <button class="modal-close" id="admin-preview-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body resume-modal-body" id="admin-preview-body">
+        <iframe id="admin-preview-iframe" width="100%" height="100%" style="border: none; border-radius: 8px; background: white;"></iframe>
       </div>
     </div>
   </div>
