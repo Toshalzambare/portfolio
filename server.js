@@ -447,11 +447,15 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
     else if (ext === '.svg') mimeType = 'image/svg+xml';
     
     const html = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0b0f19; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-  img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 4px; }
-</style></head><body>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0b0f19; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
+    img { max-width: 95vw; max-height: 95dvh; object-fit: contain; border-radius: 4px; }
+  </style>
+</head><body>
   <img src="data:${mimeType};base64,${base64}" alt="${encodeURIComponent(fileName)}" />
 </body></html>`;
     
