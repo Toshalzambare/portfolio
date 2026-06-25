@@ -135,7 +135,7 @@ async function getMetadata() {
   if (isVercelBlobEnabled()) {
     try {
       console.log('[Blob Debug] getMetadata: Reading metadata via get(pathname)');
-      const blobData = await get('private-uploads/metadata.json', { access: 'private' });
+      const blobData = await get('private-uploads/metadata.json', { access: 'private', useCache: false });
       
       // get() returns null if the blob doesn't exist
       if (!blobData) {
@@ -209,7 +209,7 @@ async function getFile(id) {
     const blobPath = `private-uploads/${id}`;
     console.log(`[Blob Debug] getFile: Reading "${blobPath}" via get(pathname)`);
     
-    const blobData = await get(blobPath, { access: 'private' });
+    const blobData = await get(blobPath, { access: 'private', useCache: false });
     if (!blobData) throw new Error('File not found in Vercel Blob');
     
     console.log(`[Blob Debug] getFile: Got blob, reading stream`);
@@ -431,8 +431,9 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   const result = await getFileByRequestIndex(req, res);
   if (!result) return res.status(404).json({ error: 'Not Found' });
 
-  // Infer content type
-  const ext = path.extname(result.name).toLowerCase();
+  // Infer content type from file extension (guard against missing name)
+  const fileName = result.name || 'file';
+  const ext = path.extname(fileName).toLowerCase();
   const imageExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg'];
   
   // For images: wrap in a styled HTML page so they display properly in the iframe
@@ -451,7 +452,7 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   body { background: #0b0f19; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
   img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 4px; }
 </style></head><body>
-  <img src="data:${mimeType};base64,${base64}" alt="${encodeURIComponent(result.name)}" />
+  <img src="data:${mimeType};base64,${base64}" alt="${encodeURIComponent(fileName)}" />
 </body></html>`;
     
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -466,7 +467,7 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   else if (ext === '.json') contentType = 'application/json';
 
   res.setHeader('Content-Type', contentType);
-  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(result.name)}"`);
+  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(fileName)}"`);
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   return res.send(result.buffer);
 });
@@ -476,8 +477,9 @@ app.get('/api/admin/files/:index/download', authenticateJWT, async (req, res) =>
   const result = await getFileByRequestIndex(req, res);
   if (!result) return res.status(404).json({ error: 'Not Found' });
 
+  const dlName = result.name || 'download';
   res.setHeader('Content-Type', 'application/octet-stream');
-  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(result.name)}"`);
+  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(dlName)}"`);
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   return res.send(result.buffer);
 });
