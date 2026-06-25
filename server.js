@@ -420,6 +420,31 @@ app.get('/api/admin/files/:index/download', authenticateJWT, async (req, res) =>
   return res.send(result.buffer);
 });
 
+// Admin: Delete All Files
+app.delete('/api/admin/files', authenticateJWT, async (req, res) => {
+  try {
+    const metadata = await getMetadata();
+    
+    // Delete all files from storage
+    for (const file of metadata.files) {
+      try {
+        await removeFile(file.id);
+      } catch (err) {
+        console.error(`Failed to remove file ${file.id}:`, err);
+      }
+    }
+    
+    // Reset metadata
+    metadata.files = [];
+    await saveMetadata(metadata);
+    
+    return res.json({ success: true, message: 'All private files deleted successfully' });
+  } catch (error) {
+    console.error('Delete all files error:', error);
+    return res.status(500).json({ error: 'Failed to delete files securely' });
+  }
+});
+
 // Admin: Delete File
 app.delete('/api/admin/files/:index', authenticateJWT, async (req, res) => {
   const requestIndex = parseInt(req.params.index, 10);

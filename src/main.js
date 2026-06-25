@@ -238,6 +238,7 @@ function initApp() {
     - <span class="cmd-highlight">vw &lt;idx&gt;</span>     : Securely preview file in app (e.g. vw 1)<br>
     - <span class="cmd-highlight">dl &lt;idx&gt;</span>     : Securely download file (e.g. dl 1)<br>
     - <span class="cmd-highlight">del &lt;idx&gt;</span>    : Delete private file (e.g. del 1)<br>
+    - <span class="cmd-highlight">da / delall</span> : Delete ALL stored private files<br>
     - <span class="cmd-highlight">ex</span>         : Exit admin session and log out<br>
     - <span class="cmd-highlight">clear</span>      : Wipe terminal history`;
 
@@ -315,7 +316,39 @@ function initApp() {
     
     if (rawCmd === '') return;
 
-    // 1. Password Prompt Mode Handling (Masked)
+    // 1. Confirm Delete All Mode Handling
+    if (cliMode === 'CONFIRM_DELETE_ALL') {
+      const confirm = cleanCmd;
+      
+      // Revert prompt label to admin mode
+      if (terminalPromptLabel) {
+        terminalPromptLabel.textContent = 'admin@portfolio:~$';
+      }
+      
+      printLine(`Confirm delete all files? (y/n): ${rawCmd}`, 'user-cmd');
+      
+      if (confirm === 'y' || confirm === 'yes') {
+        printLine('Initiating complete data purge...', 'system-msg');
+        try {
+          const res = await fetch('/api/admin/files', { method: 'DELETE' });
+          const data = await res.json();
+          if (res.ok) {
+            printLine('<span class="success-msg"><i class="fa-solid fa-trash-can"></i> All private files deleted successfully.</span>', 'info-msg');
+          } else {
+            printLine(`<span class="error-msg">Purge aborted: ${data.error || 'Server error'}</span>`, 'error-msg');
+          }
+        } catch (err) {
+          printLine('<span class="error-msg">Failed to dispatch purge payload.</span>', 'error-msg');
+        }
+      } else {
+        printLine('Operation aborted. No files were deleted.', 'info-msg');
+      }
+      
+      cliMode = 'ADMIN';
+      return;
+    }
+
+    // 2. Password Prompt Mode Handling (Masked)
     if (cliMode === 'PASSWORD_PROMPT') {
       // Revert terminal visual state
       if (terminalInput) {
@@ -413,6 +446,14 @@ function initApp() {
           }
         } catch (err) {
           printLine('<span class="error-msg">Failed to contact retrieval API.</span>', 'error-msg');
+        }
+        return;
+      }
+
+      if (cleanCmd === 'da' || cleanCmd === 'delall') {
+        cliMode = 'CONFIRM_DELETE_ALL';
+        if (terminalPromptLabel) {
+          terminalPromptLabel.textContent = 'Confirm delete all? (y/n): ';
         }
         return;
       }
