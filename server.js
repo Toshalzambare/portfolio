@@ -465,10 +465,15 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   }
   
   // For PDFs: Mobile browsers often fail to display inline PDFs in iframes.
-  // We use Mozilla's PDF.js to render the PDF reliably on all devices (mobile + desktop).
+  // We use Mozilla's PDF.js to render the PDF reliably on mobile devices.
+  // For desktop, we let it fall through to serve the raw PDF so users get native viewer features.
   if (ext === '.pdf') {
-    const downloadUrl = `/api/admin/files/${req.params.index}/download`;
-    const html = `<!DOCTYPE html>
+    const userAgent = req.headers['user-agent'] || '';
+    const isMobile = /Mobile|Android|iP(hone|od|ad)|IEMobile|BlackBerry|Kindle|Opera M(obi|ini)/i.test(userAgent);
+    
+    if (isMobile) {
+      const downloadUrl = `/api/admin/files/${req.params.index}/download`;
+      const html = `<!DOCTYPE html>
 <html><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -511,14 +516,17 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   </script>
 </body></html>`;
 
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'private, no-store, max-age=0');
-    return res.send(html);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+      return res.send(html);
+    }
+    // If desktop, it falls through to the raw response below.
   }
   
-  // For other non-image files: send raw content with correct mime type
+  // For other non-image files (and desktop PDFs): send raw content with correct mime type
   let contentType = 'application/octet-stream';
-  if (ext === '.txt' || ext === '.md') contentType = 'text/plain; charset=utf-8';
+  if (ext === '.pdf') contentType = 'application/pdf';
+  else if (ext === '.txt' || ext === '.md') contentType = 'text/plain; charset=utf-8';
   else if (ext === '.json') contentType = 'application/json';
 
   res.setHeader('Content-Type', contentType);
