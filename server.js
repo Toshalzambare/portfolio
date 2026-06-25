@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { put, del, list } from '@vercel/blob';
+import { put, del, list, get } from '@vercel/blob';
 
 dotenv.config();
 
@@ -114,7 +114,18 @@ function decrypt(combinedBuffer) {
 // ----------------------------------------------------
 // Storage Adapters (Local Filesystem vs Vercel Blob)
 // ----------------------------------------------------
-const isVercelBlobEnabled = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+const isVercelBlobEnabled = () => {
+  // Vercel injects OIDC tokens automatically for linked Blob stores
+  const hasOIDC = !!(process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID);
+  const hasToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+  return hasOIDC || hasToken;
+};
+
+// Log storage mode at startup for debugging
+console.log('[Blob Debug] BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
+console.log('[Blob Debug] VERCEL_OIDC_TOKEN set:', !!process.env.VERCEL_OIDC_TOKEN);
+console.log('[Blob Debug] BLOB_STORE_ID set:', !!process.env.BLOB_STORE_ID);
+console.log('[Blob Debug] isVercelBlobEnabled():', isVercelBlobEnabled());
 
 // Get metadata file content
 async function getMetadata() {
@@ -122,17 +133,18 @@ async function getMetadata() {
   
   if (isVercelBlobEnabled()) {
     try {
+      console.log('[Blob Debug] getMetadata: Listing blobs with prefix "private-uploads/metadata.json"');
       const { blobs } = await list({ prefix: 'private-uploads/metadata.json' });
+      console.log('[Blob Debug] getMetadata: Found', blobs.length, 'metadata blobs');
       if (blobs.length === 0) return defaultMeta;
       
-      const res = await fetch(blobs[0].url);
-      if (!res.ok) return defaultMeta;
-      
-      const encryptedData = await res.arrayBuffer();
-      const decrypted = decrypt(Buffer.from(encryptedData));
+      // Use SDK get() for reading blobs (works with both private and public stores)
+      const blobData = await get(blobs[0].url, { access: 'private' });
+      const arrayBuf = await new Response(blobData.stream).arrayBuffer();
+      const decrypted = decrypt(Buffer.from(arrayBuf));
       return JSON.parse(decrypted.toString('utf8'));
     } catch (e) {
-      console.error('Error reading Vercel Blob metadata:', e);
+      console.error('[Blob Debug] Error reading Vercel Blob metadata:', e);
       return defaultMeta;
     }
   } else {
@@ -155,11 +167,13 @@ async function saveMetadata(metadata) {
   const encrypted = encrypt(dataBuffer);
   
   if (isVercelBlobEnabled()) {
-    await put('private-uploads/metadata.json', encrypted, {
+    console.log('[Blob Debug] saveMetadata: Writing encrypted metadata to Blob');
+    const result = await put('private-uploads/metadata.json', encrypted, {
       access: 'private',
       addRandomSuffix: false,
       contentType: 'application/octet-stream',
     });
+    console.log('[Blob Debug] saveMetadata: Saved to', result.url);
   } else {
     const metaPath = path.join(UPLOADS_DIR, 'metadata.json');
     fs.writeFileSync(metaPath, encrypted);
@@ -171,12 +185,15 @@ async function saveFile(id, buffer) {
   const encrypted = encrypt(buffer);
   
   if (isVercelBlobEnabled()) {
-    await put(`private-uploads/${id}`, encrypted, {
+    console.log(`[Blob Debug] saveFile: Uploading file "${id}" (${encrypted.length} bytes encrypted) to Vercel Blob`);
+    const result = await put(`private-uploads/${id}`, encrypted, {
       access: 'private',
       addRandomSuffix: false,
       contentType: 'application/octet-stream',
     });
+    console.log(`[Blob Debug] saveFile: Successfully saved to ${result.url}`);
   } else {
+    console.log(`[Blob Debug] saveFile: Saving file "${id}" to local disk at ${UPLOADS_DIR}`);
     const filePath = path.join(UPLOADS_DIR, id);
     fs.writeFileSync(filePath, encrypted);
   }
@@ -185,14 +202,15 @@ async function saveFile(id, buffer) {
 // Get decrypted file buffer
 async function getFile(id) {
   if (isVercelBlobEnabled()) {
+    console.log(`[Blob Debug] getFile: Looking up "private-uploads/${id}" in Blob`);
     const { blobs } = await list({ prefix: `private-uploads/${id}` });
     if (blobs.length === 0) throw new Error('File not found in Vercel Blob');
     
-    const res = await fetch(blobs[0].url);
-    if (!res.ok) throw new Error('Failed to fetch file from Vercel Blob');
-    
-    const encryptedData = await res.arrayBuffer();
-    return decrypt(Buffer.from(encryptedData));
+    // Use SDK get() to read blob data (works for both public and private stores)
+    console.log(`[Blob Debug] getFile: Found blob at ${blobs[0].url}, fetching via get()`);
+    const blobData = await get(blobs[0].url, { access: 'private' });
+    const arrayBuf = await new Response(blobData.stream).arrayBuffer();
+    return decrypt(Buffer.from(arrayBuf));
   } else {
     const filePath = path.join(UPLOADS_DIR, id);
     if (!fs.existsSync(filePath)) throw new Error('File not found on local disk');
@@ -348,6 +366,8 @@ app.post('/api/admin/upload', authenticateJWT, upload.single('file'), async (req
     const fileId = crypto.randomUUID();
     const originalName = req.file.originalname;
     
+    console.log(`[Upload Debug] Starting upload: "${originalName}" (${req.file.size} bytes), Storage: ${isVercelBlobEnabled() ? 'Vercel Blob' : 'Local Disk'}`);
+    
     // Save the encrypted file
     await saveFile(fileId, req.file.buffer);
     
@@ -360,9 +380,10 @@ app.post('/api/admin/upload', authenticateJWT, upload.single('file'), async (req
     });
     await saveMetadata(metadata);
     
+    console.log(`[Upload Debug] Upload complete: "${originalName}" saved as ${fileId}`);
     return res.json({ success: true, message: `Uploaded and encrypted "${originalName}"` });
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('[Upload Debug] Upload error:', error);
     return res.status(500).json({ error: 'Failed to upload file securely' });
   }
 });
