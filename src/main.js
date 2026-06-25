@@ -368,9 +368,14 @@ function initApp() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password: rawCmd })
         });
-        const data = await res.json();
         
-        if (res.ok && data.success) {
+        let data;
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await res.json();
+        }
+        
+        if (res.ok && data && data.success) {
           cliMode = 'ADMIN';
           if (terminalPromptLabel) {
             terminalPromptLabel.textContent = 'admin@portfolio:~$';
@@ -378,11 +383,12 @@ function initApp() {
           printLine('<span class="success-msg"><i class="fa-solid fa-unlock-keyhole"></i> Authorization Verified. Secure Admin mode initialized. Type <span class="cmd-highlight">help</span> for commands.</span>', 'info-msg');
         } else {
           cliMode = 'GUEST';
-          printLine(`<span class="error-msg"><i class="fa-solid fa-lock"></i> Authorization Denied: ${data.error || 'Invalid credentials.'}</span>`, 'error-msg');
+          const errMsg = data ? (data.error || 'Invalid credentials.') : `HTTP Error ${res.status}`;
+          printLine(`<span class="error-msg"><i class="fa-solid fa-lock"></i> Authorization Denied: ${errMsg}</span>`, 'error-msg');
         }
       } catch (err) {
         cliMode = 'GUEST';
-        printLine('<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Authentication server offline.</span>', 'error-msg');
+        printLine(`<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Authentication server offline or returned an error page. (${err.message})</span>`, 'error-msg');
       }
       return;
     }

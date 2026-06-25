@@ -18,10 +18,17 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Initialize file uploads directory (if local)
-const UPLOADS_DIR = path.join(__dirname, 'private_uploads');
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// Initialize file uploads directory (use writable /tmp on Vercel to prevent read-only filesystem crash)
+const UPLOADS_DIR = process.env.VERCEL
+  ? '/tmp/private_uploads'
+  : path.join(__dirname, 'private_uploads');
+
+try {
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Failed to initialize local uploads directory:', err.message);
 }
 
 // ----------------------------------------------------
