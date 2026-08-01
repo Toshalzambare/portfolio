@@ -176,6 +176,7 @@ function initApp() {
   const terminalResumeInput = document.getElementById('terminal-resume-input');
   const terminalFullscreenBtn = document.getElementById('terminal-fullscreen-btn');
   const heroCard = document.getElementById('hero-card');
+  const terminalFullscreenOverlay = document.getElementById('terminal-fullscreen-overlay');
 
   // Preview Modal Elements
   const adminPreviewModal = document.getElementById('admin-preview-modal');
@@ -184,19 +185,43 @@ function initApp() {
   const adminPreviewOverlay = adminPreviewModal?.querySelector('.modal-overlay');
 
   let cliMode = 'GUEST'; // 'GUEST', 'PASSWORD_PROMPT', 'ADMIN', 'RESUME_MGMT'
+  let isTerminalFullscreen = false;
+  let heroCardOriginalParent = heroCard?.parentElement;
 
   function toggleTerminalFullscreen() {
-    if (!heroCard) return;
-    const isFullscreen = heroCard.classList.toggle('fullscreen');
+    if (!heroCard || !terminalFullscreenOverlay) return;
+
+    if (!isTerminalFullscreen) {
+      // Save original parent reference and move card into the overlay
+      heroCardOriginalParent = heroCard.parentElement;
+      terminalFullscreenOverlay.appendChild(heroCard);
+      terminalFullscreenOverlay.classList.add('active');
+      isTerminalFullscreen = true;
+    } else {
+      // Move card back to original parent
+      if (heroCardOriginalParent) {
+        heroCardOriginalParent.appendChild(heroCard);
+      }
+      terminalFullscreenOverlay.classList.remove('active');
+      isTerminalFullscreen = false;
+    }
+
+    // Update button icon
     if (terminalFullscreenBtn) {
       const icon = terminalFullscreenBtn.querySelector('i');
       if (icon) {
-        icon.className = isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+        icon.className = isTerminalFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
       }
     }
-    document.body.style.overflow = isFullscreen ? 'hidden' : '';
+
+    document.body.style.overflow = isTerminalFullscreen ? 'hidden' : '';
+
+    // Scroll terminal to bottom and auto-focus input
     if (terminalBody) {
       terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+    if (terminalInput) {
+      terminalInput.focus();
     }
   }
 
@@ -1147,10 +1172,20 @@ function initApp() {
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      // Close fullscreen terminal first if active
+      if (isTerminalFullscreen) {
+        toggleTerminalFullscreen();
+        return;
+      }
       closeModal();
       closeResumeModal();
       closeAdminPreviewModal();
     }
+  });
+
+  // Click anywhere in the terminal body to focus the input
+  terminalBody?.addEventListener('click', () => {
+    if (terminalInput) terminalInput.focus();
   });
 
   // Resume Modal Logic
