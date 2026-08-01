@@ -447,9 +447,10 @@ app.get('/api/resumes', async (req, res) => {
       const { blobs } = await list({ prefix: 'resumes/' });
       for (const blob of blobs) {
         if (blob.pathname === 'resumes/') continue;
+        const filename = blob.pathname.replace('resumes/', '');
         listData.push({
-          name: blob.pathname.replace('resumes/', ''),
-          url: blob.url,
+          name: filename,
+          url: `/api/resumes/file/${encodeURIComponent(filename)}`,
           size: blob.size,
           uploadedAt: new Date(blob.uploadedAt).getTime()
         });
@@ -463,7 +464,7 @@ app.get('/api/resumes', async (req, res) => {
           if (stats.isFile()) {
             listData.push({
               name: file,
-              url: `/resumes/${file}`,
+              url: `/api/resumes/file/${encodeURIComponent(file)}`,
               size: stats.size,
               uploadedAt: stats.mtime.getTime()
             });
@@ -482,6 +483,42 @@ app.get('/api/resumes', async (req, res) => {
   }
 });
 
+// ----------------------------------------------------
+// Public Resume API: Proxy Resume File (Allows public access to private blobs)
+// ----------------------------------------------------
+app.get('/api/resumes/file/:name', async (req, res) => {
+  const resumeName = req.params.name;
+  if (!resumeName) return res.status(400).json({ error: 'Resume name required' });
+
+  try {
+    if (isVercelBlobEnabled()) {
+      const blobPath = `resumes/${resumeName}`;
+      try {
+        const blobData = await get(blobPath, { access: 'private', useCache: false });
+        if (!blobData) return res.status(404).send('Not Found');
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        // stream the response
+        const arrayBuf = await new Response(blobData.stream).arrayBuffer();
+        return res.send(Buffer.from(arrayBuf));
+      } catch (e) {
+        return res.status(404).send('Resume not found in Blob');
+      }
+    } else {
+      const filePath = path.join(RESUMES_DIR, resumeName);
+      if (fs.existsSync(filePath)) {
+        res.setHeader('Content-Type', 'application/pdf');
+        return res.sendFile(filePath);
+      } else {
+        return res.status(404).send('Not Found');
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching resume file:', err);
+    return res.status(500).send('Internal Server Error');
+  }
+});
+
 // Admin: Upload Resume
 app.post('/api/admin/resumes/upload', authenticateJWT, upload.single('file'), async (req, res) => {
   if (!req.file) {
@@ -497,7 +534,7 @@ app.post('/api/admin/resumes/upload', authenticateJWT, upload.single('file'), as
     if (isVercelBlobEnabled()) {
       console.log(`[Upload Debug] Uploading resume to Vercel Blob: "resumes/${originalName}"`);
       const result = await put(`resumes/${originalName}`, req.file.buffer, {
-        access: 'public',
+        access: 'private',
         addRandomSuffix: false,
         allowOverwrite: true,
         contentType: 'application/pdf'
