@@ -1222,33 +1222,28 @@ function initApp() {
     try {
       const res = await fetch('/api/resumes');
       const data = await res.json();
-      if (res.ok && data.resumes && data.resumes.length > 0) {
+      if (res.ok && data.resumes) {
         resumes = data.resumes;
       } else {
-        throw new Error('No resumes returned');
+        throw new Error('Failed to fetch resumes from API');
       }
     } catch (e) {
-      console.warn('Failed to load resumes from API, falling back to defaults:', e);
-      resumes = [
-        {
-          name: 'Toshal_Zambare_AI_Resume.pdf',
-          url: '/resume.pdf',
-          size: 4086942,
-          uploadedAt: Date.now()
-        },
-        {
-          name: 'MET_Toshal_Zambare_ML.pdf',
-          url: '/new_resume/MET_Toshal_Zambare_ML.pdf',
-          size: 73432,
-          uploadedAt: Date.now() - 86400000
-        },
-        {
-          name: 'Toshal_Zambare_DevOps.pdf',
-          url: '/new_resume/Toshal_Zambare_DevOps.pdf',
-          size: 125587,
-          uploadedAt: Date.now() - 172800000
-        }
-      ];
+      console.warn('Failed to load resumes from API:', e);
+      // Only fallback to a default if the API completely failed (e.g. local dev without backend)
+      resumes = [];
+    }
+    
+    resumeGrid.innerHTML = '';
+
+    if (resumes.length === 0) {
+      resumeGrid.innerHTML = `
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary); width: 100%; grid-column: 1 / -1;">
+          <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--border-color-gold);"></i>
+          <p>No resumes available in database.</p>
+          <p style="font-size: 0.85em; opacity: 0.7; margin-top: 0.5rem;">Use Admin CLI (manage mode) to upload resumes.</p>
+        </div>
+      `;
+      return;
     }
     
     resumeGrid.innerHTML = '';
