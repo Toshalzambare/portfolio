@@ -196,10 +196,11 @@
                 <span class="company-name">AI Leela, Nashik</span>
               </div>
               <ul class="timeline-details">
-                <li>Designed and developed an AI-powered SaaS platform (<strong>XeroxSaaS</strong>) using the MERN stack.</li>
-                <li>Built secure backend APIs with JWT authentication and cloud-based file streaming.</li>
-                <li>Integrated LangChain-based AI agents for intelligent document conversion and page analysis.</li>
-                <li>Deployed scalable full-stack infrastructure using Vercel, Render, MongoDB Atlas, and object storage.</li>
+                <li>Architected an event-driven Knowledge Hub integrating OAuth APIs for delta-syncs across G-Drive and OneDrive.</li>
+                <li>Engineered asynchronous, multimodal ingestion using Celery workers to extract PDF, XLSX, and MP4 via LangChain and Whisper.</li>
+                <li>Designed a Two-Stage RAG search engine using 384D vector embeddings (SentenceTransformers), Qdrant, and Cross-Encoder reranking.</li>
+                <li>Implemented an LLM Factory Pattern supporting OpenAI, Anthropic, and Ollama with Server-Sent Events (SSE).</li>
+                <li style="color: var(--accent-gold); margin-top: 0.5rem;"><i class="fa-solid fa-rocket" style="margin-right: 0.3rem;"></i> <strong>This project is live and actively used in production by AI Leela locally.</strong></li>
               </ul>
             </div>
           </div>
@@ -219,8 +220,8 @@
           <div class="project-filters">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="ai-ml">AI & ML</button>
-            <button class="filter-btn" data-filter="web-software">Web & Software</button>
-            <button class="filter-btn" data-filter="iot-games">IoT & Games</button>
+            <button class="filter-btn" data-filter="devops-cloud">DevOps & Cloud</button>
+            <button class="filter-btn" data-filter="other">Other</button>
           </div>
         </div>
         <!-- Rendered dynamically from main.js -->
@@ -253,94 +254,64 @@
               <span class="skill-tag">LLMs</span>
               <span class="skill-tag">LangChain</span>
               <span class="skill-tag">RAG Pipelines</span>
-              <span class="skill-tag">Vector Embeddings</span>
-              <span class="skill-tag">Sentence-Transformers</span>
+              <span class="skill-tag">NEAT</span>
+              <span class="skill-tag">TensorFlow / Keras</span>
               <span class="skill-tag">HuggingFace</span>
-              <span class="skill-tag">PyTorch</span>
-              <span class="skill-tag">TensorFlow</span>
+              <span class="skill-tag">Sentence-Transformers</span>
               <span class="skill-tag">OpenCV</span>
               <span class="skill-tag">Prompt Engineering</span>
             </div>
           </div>
 
-          <!-- Backend Development -->
-          <div class="skills-category-card">
-            <div class="category-header">
-              <i class="fa-solid fa-server category-icon"></i>
-              <h3>Backend</h3>
-            </div>
-            <div class="skills-list">
-              <span class="skill-tag">FastAPI</span>
-              <span class="skill-tag">Node.js / Express</span>
-              <span class="skill-tag">Celery</span>
-              <span class="skill-tag">Redis</span>
-              <span class="skill-tag">REST APIs</span>
-              <span class="skill-tag">Async Programming</span>
-              <span class="skill-tag">Socket.io</span>
-            </div>
-          </div>
-
-          <!-- Frontend Development -->
-          <div class="skills-category-card">
-            <div class="category-header">
-              <i class="fa-solid fa-laptop-code category-icon"></i>
-              <h3>Frontend & Cross-Platform</h3>
-            </div>
-            <div class="skills-list">
-              <span class="skill-tag">React.js</span>
-              <span class="skill-tag">Flutter</span>
-              <span class="skill-tag">FlutterFlow</span>
-              <span class="skill-tag">HTML5 / CSS3</span>
-              <span class="skill-tag">JavaScript / ES6</span>
-            </div>
-          </div>
-
-          <!-- Databases -->
-          <div class="skills-category-card">
-            <div class="category-header">
-              <i class="fa-solid fa-database category-icon"></i>
-              <h3>Databases & Storage</h3>
-            </div>
-            <div class="skills-list">
-              <span class="skill-tag">PostgreSQL</span>
-              <span class="skill-tag">MongoDB</span>
-              <span class="skill-tag">Qdrant (Vector DB)</span>
-              <span class="skill-tag">FireStore</span>
-              <span class="skill-tag">MinIO</span>
-            </div>
-          </div>
-
-          <!-- DevOps -->
+          <!-- DevOps & Cloud -->
           <div class="skills-category-card">
             <div class="category-header">
               <i class="fa-solid fa-cloud-arrow-up category-icon"></i>
               <h3>DevOps & Cloud</h3>
             </div>
             <div class="skills-list">
-              <span class="skill-tag">Docker</span>
-              <span class="skill-tag">Firebase</span>
-              <span class="skill-tag">AWS</span>
+              <span class="skill-tag">Kubernetes (KinD)</span>
+              <span class="skill-tag">ArgoCD / GitOps</span>
+              <span class="skill-tag">Docker / Compose</span>
+              <span class="skill-tag">AWS (EC2, Lambda, SQS, SNS)</span>
               <span class="skill-tag">Google Cloud</span>
-              <span class="skill-tag">Vercel</span>
-              <span class="skill-tag">Git</span>
+              <span class="skill-tag">GitHub Actions</span>
+              <span class="skill-tag">NGINX Ingress</span>
             </div>
           </div>
 
-          <!-- Languages -->
+          <!-- Backend & Databases -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-server category-icon"></i>
+              <h3>Backend & DBs</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">FastAPI</span>
+              <span class="skill-tag">Flask</span>
+              <span class="skill-tag">Celery</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MinIO</span>
+              <span class="skill-tag">Qdrant (Vector DB)</span>
+              <span class="skill-tag">MongoDB</span>
+            </div>
+          </div>
+
+          <!-- Languages & Tools -->
           <div class="skills-category-card">
             <div class="category-header">
               <i class="fa-solid fa-code category-icon"></i>
-              <h3>Tools & Languages</h3>
+              <h3>Languages & Tools</h3>
             </div>
             <div class="skills-list">
               <span class="skill-tag">Python</span>
+              <span class="skill-tag">Bash</span>
+              <span class="skill-tag">C++ / C</span>
               <span class="skill-tag">Dart</span>
-              <span class="skill-tag">C</span>
-              <span class="skill-tag">C++</span>
-              <span class="skill-tag">Java</span>
               <span class="skill-tag">Pandas / NumPy</span>
-              <span class="skill-tag">IoT / Arduino</span>
-              <span class="skill-tag">Blockchain</span>
+              <span class="skill-tag">Git / OOP</span>
+              <span class="skill-tag">Data Structures</span>
             </div>
           </div>
         </div>
