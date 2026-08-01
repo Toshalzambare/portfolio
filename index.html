@@ -84,6 +84,9 @@
                 <span class="dot green"></span>
               </div>
               <span class="card-title"><i class="fa-solid fa-terminal"></i> toshal@zambare:~</span>
+              <button id="terminal-fullscreen-btn" class="terminal-action-btn" aria-label="Toggle Fullscreen">
+                <i class="fa-solid fa-expand"></i>
+              </button>
             </div>
             <div class="card-body terminal-body" id="terminal-body">
               <div class="terminal-output" id="terminal-output">
@@ -93,6 +96,7 @@
                 <span class="terminal-prompt" id="terminal-prompt-label">guest@portfolio:~$</span>
                 <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="type a command..." aria-label="Terminal input">
                 <input type="file" id="terminal-file-input" style="display: none;" multiple>
+                <input type="file" id="terminal-resume-input" style="display: none;" accept=".pdf">
               </div>
             </div>
             <div class="terminal-shortcuts">
@@ -596,7 +600,32 @@
     <div class="modal-content glass-card resume-modal-content">
       <button class="modal-close" id="resume-modal-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
       <div class="modal-body resume-modal-body">
-        <iframe src="/resume.pdf" width="100%" height="100%" style="border: none; border-radius: 8px;"></iframe>
+        <!-- Resume Selection View -->
+        <div id="resume-selection-view" style="display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
+          <div class="modal-header-section" style="margin-bottom: 1.5rem;">
+            <h3 class="modal-project-title" style="margin-bottom: 0.25rem;">Select a Resume</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Choose one of the specialized versions below to preview or download</p>
+          </div>
+          <div class="resume-grid" id="resume-grid">
+            <!-- Dynamically populated resume cards -->
+            <div class="resume-loading" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
+              <p>Fetching available resumes...</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Resume Preview View -->
+        <div id="resume-preview-view" style="display: none; flex-direction: column; height: 100%;">
+          <div class="resume-preview-header">
+            <button id="resume-back-btn" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Resumes</button>
+            <span id="resume-preview-title">Resume Preview</span>
+            <a id="resume-preview-download-btn" href="#" download class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
+          </div>
+          <div class="resume-preview-body" style="flex-grow: 1; margin-top: 1rem; height: calc(100% - 60px);">
+            <iframe id="resume-iframe" src="" width="100%" height="100%" style="border: none; border-radius: 8px; background: #0b0f19;"></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </div>

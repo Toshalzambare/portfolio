@@ -32,6 +32,45 @@ try {
   console.warn('Failed to initialize local uploads directory:', err.message);
 }
 
+// Initialize public resumes directory
+const RESUMES_DIR = process.env.VERCEL
+  ? '/tmp/resumes'
+  : path.join(__dirname, 'public', 'resumes');
+
+try {
+  if (!fs.existsSync(RESUMES_DIR)) {
+    fs.mkdirSync(RESUMES_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Failed to initialize local resumes directory:', err.message);
+}
+
+// Copy default resumes from workspace folders if they exist and local resumes folder is empty
+try {
+  const localResumes = fs.readdirSync(RESUMES_DIR);
+  if (localResumes.filter(f => f.toLowerCase().endsWith('.pdf')).length === 0) {
+    console.log('[Startup] Resumes folder is empty. Copying defaults...');
+    // Copy public/resume.pdf
+    const defaultResumePath = path.join(__dirname, 'public', 'resume.pdf');
+    if (fs.existsSync(defaultResumePath)) {
+      fs.copyFileSync(defaultResumePath, path.join(RESUMES_DIR, 'Toshal_Zambare_AI_Resume.pdf'));
+    }
+    // Copy from new_resume folder if exists
+    const srcNewResumeDir = path.join(__dirname, 'new_resume');
+    if (fs.existsSync(srcNewResumeDir)) {
+      const defaultFiles = fs.readdirSync(srcNewResumeDir);
+      for (const file of defaultFiles) {
+        if (file.toLowerCase().endsWith('.pdf')) {
+          fs.copyFileSync(path.join(srcNewResumeDir, file), path.join(RESUMES_DIR, file));
+        }
+      }
+    }
+    console.log('[Startup] Default resumes copied.');
+  }
+} catch (err) {
+  console.warn('Failed to copy default resumes on startup:', err.message);
+}
+
 // ----------------------------------------------------
 // Global Middlewares & Security Headers
 // ----------------------------------------------------
@@ -398,6 +437,122 @@ app.post('/api/admin/upload', authenticateJWT, upload.single('file'), async (req
   }
 });
 
+// ----------------------------------------------------
+// Public Resume API: List all resumes
+// ----------------------------------------------------
+app.get('/api/resumes', async (req, res) => {
+  try {
+    const listData = [];
+    if (isVercelBlobEnabled()) {
+      const { blobs } = await list({ prefix: 'resumes/' });
+      for (const blob of blobs) {
+        if (blob.pathname === 'resumes/') continue;
+        listData.push({
+          name: blob.pathname.replace('resumes/', ''),
+          url: blob.url,
+          size: blob.size,
+          uploadedAt: new Date(blob.uploadedAt).getTime()
+        });
+      }
+    } else {
+      if (fs.existsSync(RESUMES_DIR)) {
+        const files = fs.readdirSync(RESUMES_DIR);
+        for (const file of files) {
+          const filePath = path.join(RESUMES_DIR, file);
+          const stats = fs.statSync(filePath);
+          if (stats.isFile()) {
+            listData.push({
+              name: file,
+              url: `/resumes/${file}`,
+              size: stats.size,
+              uploadedAt: stats.mtime.getTime()
+            });
+          }
+        }
+      }
+    }
+    
+    // Sort: newer first
+    listData.sort((a, b) => b.uploadedAt - a.uploadedAt);
+    
+    return res.json({ resumes: listData });
+  } catch (error) {
+    console.error('Error fetching resumes:', error);
+    return res.status(500).json({ error: 'Failed to fetch resumes' });
+  }
+});
+
+// Admin: Upload Resume
+app.post('/api/admin/resumes/upload', authenticateJWT, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    const originalName = req.file.originalname;
+    if (!originalName.toLowerCase().endsWith('.pdf')) {
+      return res.status(400).json({ error: 'Only PDF resumes are supported' });
+    }
+
+    if (isVercelBlobEnabled()) {
+      console.log(`[Upload Debug] Uploading resume to Vercel Blob: "resumes/${originalName}"`);
+      const result = await put(`resumes/${originalName}`, req.file.buffer, {
+        access: 'public',
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: 'application/pdf'
+      });
+      console.log(`[Upload Debug] Resume saved to ${result.url}`);
+    } else {
+      console.log(`[Upload Debug] Saving resume to local folder: ${originalName}`);
+      const filePath = path.join(RESUMES_DIR, originalName);
+      fs.writeFileSync(filePath, req.file.buffer);
+    }
+
+    return res.json({ success: true, message: `Successfully uploaded resume "${originalName}"` });
+  } catch (error) {
+    console.error('[Upload Debug] Resume upload error:', error);
+    return res.status(500).json({ error: 'Failed to upload resume' });
+  }
+});
+
+// Admin: Delete Resume
+app.delete('/api/admin/resumes/:name', authenticateJWT, async (req, res) => {
+  const resumeName = req.params.name;
+  if (!resumeName) {
+    return res.status(400).json({ error: 'Resume name required' });
+  }
+
+  try {
+    if (isVercelBlobEnabled()) {
+      const pathname = `resumes/${resumeName}`;
+      console.log(`[Blob Debug] Deleting resume "${pathname}"`);
+      const { blobs } = await list({ prefix: pathname });
+      const targetBlob = blobs.find(b => b.pathname === pathname);
+      
+      if (targetBlob) {
+        await del(targetBlob.url);
+        console.log(`[Blob Debug] Deleted Vercel Blob: ${targetBlob.url}`);
+      } else {
+        return res.status(404).json({ error: 'Resume not found in Blob storage' });
+      }
+    } else {
+      const filePath = path.join(RESUMES_DIR, resumeName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`Deleted local resume: ${filePath}`);
+      } else {
+        return res.status(404).json({ error: 'Resume not found' });
+      }
+    }
+
+    return res.json({ success: true, message: `Successfully deleted resume "${resumeName}"` });
+  } catch (error) {
+    console.error('Error deleting resume:', error);
+    return res.status(500).json({ error: 'Failed to delete resume' });
+  }
+});
+
 // Admin: Get File Helper (Shared logic for preview/download)
 async function getFileByRequestIndex(req, res) {
   const requestIndex = parseInt(req.params.index, 10);
@@ -606,6 +761,9 @@ app.delete('/api/admin/files/:index', authenticateJWT, async (req, res) => {
 // ----------------------------------------------------
 // Serve Static Assets & SPA Routing
 // ----------------------------------------------------
+// Serve static resumes directory
+app.use('/resumes', express.static(RESUMES_DIR));
+
 const DIST_DIR = path.join(__dirname, 'dist');
 if (fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));

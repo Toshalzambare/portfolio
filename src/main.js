@@ -102,7 +102,6 @@ function initApp() {
     if (isTouch) return;
 
     const tiltElements = [
-      document.getElementById('hero-card'),
       ...document.querySelectorAll('.project-card'),
       ...document.querySelectorAll('.stat-card'),
       ...document.querySelectorAll('.skills-category-card')
@@ -174,6 +173,9 @@ function initApp() {
   const shortcutButtons = document.querySelectorAll('.shortcut-btn');
   const terminalPromptLabel = document.getElementById('terminal-prompt-label');
   const fileInput = document.getElementById('terminal-file-input');
+  const terminalResumeInput = document.getElementById('terminal-resume-input');
+  const terminalFullscreenBtn = document.getElementById('terminal-fullscreen-btn');
+  const heroCard = document.getElementById('hero-card');
 
   // Preview Modal Elements
   const adminPreviewModal = document.getElementById('admin-preview-modal');
@@ -181,18 +183,36 @@ function initApp() {
   const adminPreviewIframe = document.getElementById('admin-preview-iframe');
   const adminPreviewOverlay = adminPreviewModal?.querySelector('.modal-overlay');
 
-  let cliMode = 'GUEST'; // 'GUEST', 'PASSWORD_PROMPT', 'ADMIN'
+  let cliMode = 'GUEST'; // 'GUEST', 'PASSWORD_PROMPT', 'ADMIN', 'RESUME_MGMT'
+
+  function toggleTerminalFullscreen() {
+    if (!heroCard) return;
+    const isFullscreen = heroCard.classList.toggle('fullscreen');
+    if (terminalFullscreenBtn) {
+      const icon = terminalFullscreenBtn.querySelector('i');
+      if (icon) {
+        icon.className = isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+      }
+    }
+    document.body.style.overflow = isFullscreen ? 'hidden' : '';
+    if (terminalBody) {
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+  }
+
+  terminalFullscreenBtn?.addEventListener('click', toggleTerminalFullscreen);
 
   const terminalCommands = {
     help: () => `Available commands:<br>
-      - <span class="cmd-highlight">about</span>     : Quick bio summary<br>
-      - <span class="cmd-highlight">projects</span>  : List featured code architectures<br>
-      - <span class="cmd-highlight">skills</span>    : Show technical languages and frameworks<br>
-      - <span class="cmd-highlight">github</span>    : Open GitHub Profile (External Link)<br>
-      - <span class="cmd-highlight">linkedin</span>  : Open LinkedIn Network (External Link)<br>
-      - <span class="cmd-highlight">resume</span>    : View complete Resume document<br>
-      - <span class="cmd-highlight">contact</span>   : Print email and contact options<br>
-      - <span class="cmd-highlight">clear</span>     : Wipe terminal history`,
+      - <span class="cmd-highlight">about</span>      : Quick bio summary<br>
+      - <span class="cmd-highlight">projects</span>   : List featured code architectures<br>
+      - <span class="cmd-highlight">skills</span>     : Show technical languages and frameworks<br>
+      - <span class="cmd-highlight">github</span>     : Open GitHub Profile (External Link)<br>
+      - <span class="cmd-highlight">linkedin</span>   : Open LinkedIn Network (External Link)<br>
+      - <span class="cmd-highlight">resume</span>     : View complete Resume document<br>
+      - <span class="cmd-highlight">contact</span>    : Print email and contact options<br>
+      - <span class="cmd-highlight">fs</span> / <span class="cmd-highlight">fullscreen</span> : Toggle fullscreen mode<br>
+      - <span class="cmd-highlight">clear</span>      : Wipe terminal history`,
     about: () => `<strong>Toshal Narendra Zambare</strong><br>
       AI / Data Science & Full-Stack Developer.<br>
       CGPA: 8.7 / 10 | Savitribai Phule Pune University<br>
@@ -218,12 +238,24 @@ function initApp() {
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching LinkedIn page in new tab...</span>`;
     },
     resume: () => {
-      setTimeout(() => window.open('/resume.pdf', '_blank'), 500);
-      return `<span class="success-msg"><i class="fa-solid fa-file-pdf"></i> Opening Resume document...</span>`;
+      setTimeout(() => {
+        if (resumeBtn) resumeBtn.click();
+      }, 500);
+      return `<span class="success-msg"><i class="fa-solid fa-window-restore"></i> Opening resume selection modal...</span>`;
     },
     cv: () => {
-      setTimeout(() => window.open('/resume.pdf', '_blank'), 500);
-      return `<span class="success-msg"><i class="fa-solid fa-file-pdf"></i> Opening Resume document...</span>`;
+      setTimeout(() => {
+        if (resumeBtn) resumeBtn.click();
+      }, 500);
+      return `<span class="success-msg"><i class="fa-solid fa-window-restore"></i> Opening resume selection modal...</span>`;
+    },
+    fs: () => {
+      setTimeout(toggleTerminalFullscreen, 200);
+      return `<span class="success-msg"><i class="fa-solid fa-expand"></i> Toggling terminal expansion...</span>`;
+    },
+    fullscreen: () => {
+      setTimeout(toggleTerminalFullscreen, 200);
+      return `<span class="success-msg"><i class="fa-solid fa-expand"></i> Toggling terminal expansion...</span>`;
     },
     contact: () => `Connect details:<br>
       - Email: toshalzambare1@gmail.com<br>
@@ -233,13 +265,23 @@ function initApp() {
   };
 
   const adminCommandsHelp = () => `Admin commands:<br>
+    - <span class="cmd-highlight">y</span>          : Enter Resume Management mode<br>
     - <span class="cmd-highlight">up</span>         : Securely upload private file<br>
     - <span class="cmd-highlight">ls</span>         : List private files with sequential indices<br>
     - <span class="cmd-highlight">vw &lt;idx&gt;</span>     : Securely preview file in app (e.g. vw 1)<br>
     - <span class="cmd-highlight">dl &lt;idx&gt;</span>     : Securely download file (e.g. dl 1)<br>
     - <span class="cmd-highlight">del &lt;idx&gt;</span>    : Delete private file (e.g. del 1)<br>
     - <span class="cmd-highlight">da / delall</span> : Delete ALL stored private files<br>
+    - <span class="cmd-highlight">fs / fullscreen</span> : Toggle fullscreen mode<br>
     - <span class="cmd-highlight">ex</span>         : Exit admin session and log out<br>
+    - <span class="cmd-highlight">clear</span>      : Wipe terminal history`;
+
+  const resumeMgmtHelp = () => `Resume Management Commands:<br>
+    - <span class="cmd-highlight">up</span>         : Upload new resume (.pdf)<br>
+    - <span class="cmd-highlight">ls</span>         : List current resumes<br>
+    - <span class="cmd-highlight">del &lt;idx&gt;</span>    : Delete a resume (e.g. del 1)<br>
+    - <span class="cmd-highlight">ex</span>         : Exit resume management mode<br>
+    - <span class="cmd-highlight">fs / fullscreen</span> : Toggle fullscreen mode<br>
     - <span class="cmd-highlight">clear</span>      : Wipe terminal history`;
 
   function printLine(text, className = 'system-msg') {
@@ -336,6 +378,34 @@ function initApp() {
     fileInput.value = ''; // Clear picker
   });
 
+  // Resume File Picker Listener
+  terminalResumeInput?.addEventListener('change', async () => {
+    if (!terminalResumeInput.files || terminalResumeInput.files.length === 0) return;
+    const file = terminalResumeInput.files[0];
+    
+    printLine(`Preparing to upload resume "${file.name}"...`, 'system-msg');
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('/api/admin/resumes/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        printLine(`<span class="success-msg"><i class="fa-solid fa-circle-check"></i> ${data.message}</span>`, 'info-msg');
+      } else {
+        printLine(`<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Error: ${data.error || 'Failed to upload resume.'}</span>`, 'error-msg');
+      }
+    } catch (err) {
+      printLine(`<span class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Network transmission failure.</span>`, 'error-msg');
+    }
+    
+    terminalResumeInput.value = ''; // Clear picker
+  });
+
   async function handleCommand(cmdText) {
     const rawCmd = cmdText.trim();
     const cleanCmd = rawCmd.toLowerCase();
@@ -419,7 +489,115 @@ function initApp() {
       return;
     }
 
-    // 2. Admin Mode Handling
+    // 2. Resume Management Mode Handling
+    if (cliMode === 'RESUME_MGMT') {
+      printLine(`admin@portfolio:resume-mgmt$ ${rawCmd}`, 'user-cmd');
+      
+      if (cleanCmd === 'clear') {
+        if (terminalOutput) terminalOutput.innerHTML = '';
+        printLine('Terminal log wiped.', 'system-msg');
+        return;
+      }
+      
+      if (cleanCmd === 'help') {
+        printLine(resumeMgmtHelp(), 'info-msg');
+        return;
+      }
+      
+      if (cleanCmd === 'ex' || cleanCmd === 'exit') {
+        printLine('Exiting resume management mode...', 'system-msg');
+        cliMode = 'ADMIN';
+        if (terminalPromptLabel) {
+          terminalPromptLabel.textContent = 'admin@portfolio:~$';
+        }
+        printLine('Returned to secure Admin mode. Type <span class="cmd-highlight">help</span> for commands.', 'info-msg');
+        return;
+      }
+      
+      if (cleanCmd === 'up') {
+        if (terminalResumeInput) {
+          printLine('Launching secure resume picker (PDF only)...', 'system-msg');
+          terminalResumeInput.click();
+        } else {
+          printLine('<span class="error-msg">Resume upload utility failed to initiate.</span>', 'error-msg');
+        }
+        return;
+      }
+      
+      if (cleanCmd === 'fs' || cleanCmd === 'fullscreen') {
+        toggleTerminalFullscreen();
+        return;
+      }
+      
+      if (cleanCmd === 'ls') {
+        printLine('Retrieving resumes list...', 'system-msg');
+        try {
+          const res = await fetch('/api/resumes');
+          const data = await res.json();
+          if (res.ok && data.resumes) {
+            if (data.resumes.length === 0) {
+              printLine('No resumes found in database storage.', 'info-msg');
+            } else {
+              let listHtml = '<strong>Resumes List:</strong><br>';
+              data.resumes.forEach((r, idx) => {
+                const dateStr = new Date(r.uploadedAt).toLocaleString();
+                const sizeKb = (r.size / 1024).toFixed(1);
+                listHtml += `[${idx + 1}] <span class="cmd-highlight">${r.name}</span> <span style="opacity: 0.6; font-size: 0.85em;">(${sizeKb} KB, Uploaded: ${dateStr})</span><br>`;
+              });
+              printLine(listHtml, 'info-msg');
+            }
+          } else {
+            printLine(`<span class="error-msg">Failed to retrieve resumes: ${data.error || 'Server error'}</span>`, 'error-msg');
+          }
+        } catch (err) {
+          printLine('<span class="error-msg">Failed to contact resumes API.</span>', 'error-msg');
+        }
+        return;
+      }
+      
+      // Check for index-based commands: del <idx>
+      const parts = cleanCmd.split(/\s+/);
+      const action = parts[0];
+      const indexStr = parts[1];
+      const targetIdx = parseInt(indexStr, 10);
+      
+      if (action === 'del' || action === 'delete') {
+        if (isNaN(targetIdx) || targetIdx <= 0) {
+          printLine('<span class="error-msg">Syntax Error: Target resume index must be a positive integer. e.g. del 1</span>', 'error-msg');
+          return;
+        }
+        
+        printLine(`Resolving resume [${targetIdx}] for deletion...`, 'system-msg');
+        try {
+          const listRes = await fetch('/api/resumes');
+          const listData = await listRes.json();
+          if (listRes.ok && listData.resumes && targetIdx <= listData.resumes.length) {
+            const resumeToDelete = listData.resumes[targetIdx - 1];
+            printLine(`Sending deletion request for "${resumeToDelete.name}"...`, 'system-msg');
+            
+            const delRes = await fetch(`/api/admin/resumes/${encodeURIComponent(resumeToDelete.name)}`, {
+              method: 'DELETE'
+            });
+            const delData = await delRes.json();
+            if (delRes.ok) {
+              printLine(`<span class="success-msg"><i class="fa-solid fa-trash-can"></i> Resume "${resumeToDelete.name}" deleted successfully.</span>`, 'info-msg');
+            } else {
+              printLine(`<span class="error-msg">Deletion failed: ${delData.error || 'Server error'}</span>`, 'error-msg');
+            }
+          } else {
+            printLine(`<span class="error-msg">Index [${targetIdx}] is out of bounds or list could not be retrieved.</span>`, 'error-msg');
+          }
+        } catch (err) {
+          printLine('<span class="error-msg">Failed to execute deletion sequence.</span>', 'error-msg');
+        }
+        return;
+      }
+      
+      printLine(`Command not found in resume-mgmt mode: "${rawCmd}". Type <span class="cmd-highlight">help</span> or <span class="cmd-highlight">ex</span>.`, 'error-msg');
+      return;
+    }
+
+    // 3. Admin Mode Handling
     if (cliMode === 'ADMIN') {
       printLine(`admin@portfolio:~$ ${rawCmd}`, 'user-cmd');
       
@@ -431,6 +609,20 @@ function initApp() {
       
       if (cleanCmd === 'help') {
         printLine(adminCommandsHelp(), 'info-msg');
+        return;
+      }
+
+      if (cleanCmd === 'y') {
+        cliMode = 'RESUME_MGMT';
+        if (terminalPromptLabel) {
+          terminalPromptLabel.textContent = 'admin@portfolio:resume-mgmt$';
+        }
+        printLine('<span class="info-msg">[Resume Management Mode Initialized] Type <span class="cmd-highlight">help</span> for available commands, <span class="cmd-highlight">ex</span> to return to admin mode.</span>', 'info-msg');
+        return;
+      }
+
+      if (cleanCmd === 'fs' || cleanCmd === 'fullscreen') {
+        toggleTerminalFullscreen();
         return;
       }
       
@@ -446,7 +638,7 @@ function initApp() {
         printLine('Logged out. Admin session terminated.', 'info-msg');
         return;
       }
-      
+
       if (cleanCmd === 'up') {
         if (fileInput) {
           printLine('Launching secure file picker...', 'system-msg');
@@ -967,22 +1159,142 @@ function initApp() {
   const resumeBtn = document.getElementById('btn-resume-preview');
   const resumeOverlay = resumeModal?.querySelector('.modal-overlay');
 
+  const resumeSelectionView = document.getElementById('resume-selection-view');
+  const resumePreviewView = document.getElementById('resume-preview-view');
+  const resumeGrid = document.getElementById('resume-grid');
+  const resumeIframe = document.getElementById('resume-iframe');
+  const resumeBackBtn = document.getElementById('resume-back-btn');
+  const resumePreviewTitle = document.getElementById('resume-preview-title');
+  const resumePreviewDownloadBtn = document.getElementById('resume-preview-download-btn');
+
+  // Load and show resumes list
+  async function loadResumesList() {
+    if (!resumeGrid) return;
+    
+    // Show loading
+    resumeGrid.innerHTML = `
+      <div class="resume-loading" style="text-align: center; padding: 3rem; color: var(--text-secondary); width: 100%;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
+        <p>Fetching available resumes...</p>
+      </div>
+    `;
+    
+    if (resumeSelectionView) resumeSelectionView.style.display = 'flex';
+    if (resumePreviewView) resumePreviewView.style.display = 'none';
+    if (resumeIframe) resumeIframe.src = '';
+    
+    let resumes = [];
+    try {
+      const res = await fetch('/api/resumes');
+      const data = await res.json();
+      if (res.ok && data.resumes && data.resumes.length > 0) {
+        resumes = data.resumes;
+      } else {
+        throw new Error('No resumes returned');
+      }
+    } catch (e) {
+      console.warn('Failed to load resumes from API, falling back to defaults:', e);
+      resumes = [
+        {
+          name: 'Toshal_Zambare_AI_Resume.pdf',
+          url: '/resume.pdf',
+          size: 4086942,
+          uploadedAt: Date.now()
+        },
+        {
+          name: 'MET_Toshal_Zambare_ML.pdf',
+          url: '/new_resume/MET_Toshal_Zambare_ML.pdf',
+          size: 73432,
+          uploadedAt: Date.now() - 86400000
+        },
+        {
+          name: 'Toshal_Zambare_DevOps.pdf',
+          url: '/new_resume/Toshal_Zambare_DevOps.pdf',
+          size: 125587,
+          uploadedAt: Date.now() - 172800000
+        }
+      ];
+    }
+    
+    resumeGrid.innerHTML = '';
+    resumes.forEach(r => {
+      const displayName = r.name.replace(/_/g, ' ').replace(/\.pdf$/i, '');
+      const sizeKb = (r.size / 1024).toFixed(0);
+      const dateStr = new Date(r.uploadedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      
+      const card = document.createElement('div');
+      card.className = 'resume-card glass-card';
+      card.innerHTML = `
+        <div class="resume-card-icon">
+          <i class="fa-solid fa-file-pdf"></i>
+        </div>
+        <div class="resume-card-info">
+          <h3>${displayName}</h3>
+          <span class="resume-card-meta">${sizeKb} KB | ${dateStr}</span>
+        </div>
+        <div class="resume-card-actions">
+          <button class="btn btn-secondary btn-sm preview-btn" data-url="${r.url}" data-name="${displayName}">Preview</button>
+          <a href="${r.url}" download="${r.name}" class="btn btn-primary btn-sm download-btn" title="Download Resume"><i class="fa-solid fa-download"></i></a>
+        </div>
+      `;
+      
+      resumeGrid.appendChild(card);
+    });
+
+    resumeGrid.querySelectorAll('.preview-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.getAttribute('data-url');
+        const name = btn.getAttribute('data-name');
+        openResumePreview(url, name);
+      });
+    });
+
+    // Apply magnetic visual effects on card buttons
+    const selectionMagnets = resumeGrid.querySelectorAll('.btn');
+    selectionMagnets.forEach(magnet => {
+      magnet.addEventListener('mousemove', (e) => {
+        const rect = magnet.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        magnet.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+      });
+      magnet.style.transition = 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)';
+      magnet.addEventListener('mouseleave', () => {
+        magnet.style.transform = 'translate(0px, 0px)';
+      });
+    });
+  }
+
+  function openResumePreview(url, name) {
+    if (resumeSelectionView) resumeSelectionView.style.display = 'none';
+    if (resumePreviewView) resumePreviewView.style.display = 'flex';
+    if (resumeIframe) resumeIframe.src = url;
+    if (resumePreviewTitle) resumePreviewTitle.textContent = name;
+    if (resumePreviewDownloadBtn) {
+      resumePreviewDownloadBtn.href = url;
+      resumePreviewDownloadBtn.setAttribute('download', name + '.pdf');
+    }
+  }
+
   resumeBtn?.addEventListener('click', () => {
     if (resumeModal) {
       resumeModal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      loadResumesList();
     }
   });
 
   function closeResumeModal() {
     if (resumeModal) {
       resumeModal.classList.remove('active');
+      if (resumeIframe) resumeIframe.src = '';
       document.body.style.overflow = '';
     }
   }
 
   resumeModalClose?.addEventListener('click', closeResumeModal);
   resumeOverlay?.addEventListener('click', closeResumeModal);
+  resumeBackBtn?.addEventListener('click', loadResumesList);
 
   // 10. Intersection Observer for Scroll Reveals
   const scrollElements = document.querySelectorAll('.section-header, .about-grid, .skills-category-card, .timeline-item, .achievement-card, .edu-card, .cert-item, .contact-card, .contact-form-container');
