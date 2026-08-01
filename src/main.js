@@ -290,7 +290,7 @@ function initApp() {
   };
 
   const adminCommandsHelp = () => `Admin commands:<br>
-    - <span class="cmd-highlight">y</span>          : Enter Resume Management mode<br>
+    - <span class="cmd-highlight">y</span>          : Enter Resume Management mode (Add/Delete resumes)<br>
     - <span class="cmd-highlight">up</span>         : Securely upload private file<br>
     - <span class="cmd-highlight">ls</span>         : List private files with sequential indices<br>
     - <span class="cmd-highlight">vw &lt;idx&gt;</span>     : Securely preview file in app (e.g. vw 1)<br>
@@ -305,7 +305,7 @@ function initApp() {
     - <span class="cmd-highlight">up</span>         : Upload new resume (.pdf)<br>
     - <span class="cmd-highlight">ls</span>         : List current resumes<br>
     - <span class="cmd-highlight">del &lt;idx&gt;</span>    : Delete a resume (e.g. del 1)<br>
-    - <span class="cmd-highlight">ex</span>         : Exit resume management mode<br>
+    - <span class="cmd-highlight">ex</span>         : Exit resume management mode (Back to Admin)<br>
     - <span class="cmd-highlight">fs / fullscreen</span> : Toggle fullscreen mode<br>
     - <span class="cmd-highlight">clear</span>      : Wipe terminal history`;
 

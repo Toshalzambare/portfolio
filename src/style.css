@@ -1897,8 +1897,8 @@ ul {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  right: 0;
+  bottom: 0;
   z-index: 2000;
   background: rgba(5, 7, 12, 0.97);
   backdrop-filter: blur(12px);
@@ -1914,7 +1914,7 @@ ul {
 #terminal-fullscreen-overlay .terminal-card {
   width: 100% !important;
   max-width: none !important;
-  height: 100vh !important;
+  height: 100% !important;
   border-radius: 0 !important;
   border: none !important;
   box-shadow: none !important;
@@ -1922,7 +1922,7 @@ ul {
 }
 
 #terminal-fullscreen-overlay .terminal-body {
-  height: calc(100vh - 42px - 58px) !important;
+  height: calc(100% - 42px - 58px) !important;
   flex-grow: 1 !important;
 }
 
@@ -2035,3 +2035,32 @@ ul {
   gap: 0.5rem;
 }
 
+
+/* ==========================================================================
+   Mobile Responsive Adjustments
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Prevent iOS Safari from auto-zooming when focusing the input */
+  #terminal-input {
+    font-size: 16px !important;
+  }
+  
+  /* Fullscreen adjustments for mobile */
+  #terminal-fullscreen-overlay .terminal-card {
+    border-radius: 0 !important;
+  }
+  
+  #terminal-fullscreen-overlay .terminal-body {
+    padding: 0.75rem !important;
+  }
+
+  .terminal-shortcuts {
+    padding: 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .shortcut-btn {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
