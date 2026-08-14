@@ -2035,6 +2035,57 @@ ul {
   gap: 0.5rem;
 }
 
+/* ==========================================================================
+   Admin GUI File Manager Modal Styles
+   ========================================================================== */
+.admin-gui-modal-content {
+  max-width: 960px !important;
+  width: 95%;
+  height: 88vh;
+  padding: 3rem 1.5rem 1.5rem;
+}
+
+.admin-gui-header {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-gui-header-info p {
+  margin-top: 0.25rem;
+}
+
+.admin-gui-file-card {
+  transition: var(--transition-smooth), border-color 0.3s ease;
+}
+
+.admin-gui-file-card:hover {
+  border-color: var(--accent-gold);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -10px var(--accent-gold-glow);
+}
+
+.admin-gui-file-card .resume-card-icon {
+  background: rgba(197, 168, 128, 0.05);
+}
+
+.admin-gui-preview-header {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+#admin-gui-preview-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 45%;
+  min-width: 0;
+}
+
 
 /* ==========================================================================
    Mobile Responsive Adjustments
@@ -2062,5 +2113,93 @@ ul {
   .shortcut-btn {
     font-size: 0.7rem;
     padding: 0.2rem 0.4rem;
+  }
+
+  /* Admin GUI File Manager Mobile */
+  .admin-gui-modal-content {
+    width: 100%;
+    height: 95vh;
+    padding: 2.5rem 0.75rem 0.75rem;
+    border-radius: 12px 12px 0 0 !important;
+    max-width: 100% !important;
+  }
+
+  .admin-gui-header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .admin-gui-header .modal-project-title {
+    font-size: 1.1rem;
+  }
+
+  #admin-gui-preview-title {
+    max-width: 100%;
+    text-align: center;
+    order: -1;
+    flex-basis: 100%;
+    font-size: 1rem;
+  }
+
+  .admin-gui-preview-header {
+    justify-content: center;
+  }
+
+  .admin-gui-preview-header .btn {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Resume modal mobile adjustments */
+  .resume-modal-content {
+    width: 100%;
+    height: 95vh;
+    padding: 2.5rem 0.75rem 0.75rem;
+    border-radius: 12px 12px 0 0 !important;
+    max-width: 100% !important;
+  }
+
+  .resume-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .resume-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .resume-card-actions .btn {
+    min-height: 44px;
+  }
+
+  .resume-preview-header {
+    gap: 0.5rem;
+  }
+
+  .resume-preview-header .btn {
+    min-height: 44px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-gui-modal-content {
+    padding: 2.25rem 0.5rem 0.5rem;
+  }
+
+  .resume-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-card-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+  }
+
+  .resume-card-info h3 {
+    font-size: 1rem;
   }
 }

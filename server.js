@@ -390,6 +390,7 @@ app.get('/api/admin/files', authenticateJWT, async (req, res) => {
     const sanitizedFiles = metadata.files.map((file, idx) => ({
       index: idx + 1, // transient 1-based index
       name: file.originalName,
+      size: file.size || null, // may be null for files uploaded before this field existed
       uploadedAt: file.uploadedAt,
     }));
     return res.json({ files: sanitizedFiles });
@@ -425,6 +426,7 @@ app.post('/api/admin/upload', authenticateJWT, upload.single('file'), async (req
     metadata.files.push({
       id: fileId,
       originalName,
+      size: req.file.size,
       uploadedAt: Date.now(),
     });
     await saveMetadata(metadata);
