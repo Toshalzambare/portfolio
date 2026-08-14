@@ -184,6 +184,18 @@ function initApp() {
   const adminPreviewIframe = document.getElementById('admin-preview-iframe');
   const adminPreviewOverlay = adminPreviewModal?.querySelector('.modal-overlay');
 
+  // Admin GUI File Manager Modal Elements
+  const adminGuiModal = document.getElementById('admin-gui-modal');
+  const adminGuiClose = document.getElementById('admin-gui-close');
+  const adminGuiOverlay = adminGuiModal?.querySelector('.modal-overlay');
+  const adminGuiSelectionView = document.getElementById('admin-gui-selection-view');
+  const adminGuiPreviewView = document.getElementById('admin-gui-preview-view');
+  const adminGuiGrid = document.getElementById('admin-gui-grid');
+  const adminGuiIframe = document.getElementById('admin-gui-iframe');
+  const adminGuiBackBtn = document.getElementById('admin-gui-back-btn');
+  const adminGuiPreviewTitle = document.getElementById('admin-gui-preview-title');
+  const adminGuiDownloadBtn = document.getElementById('admin-gui-download-btn');
+
   let cliMode = 'GUEST'; // 'GUEST', 'PASSWORD_PROMPT', 'ADMIN', 'RESUME_MGMT'
   let isTerminalFullscreen = false;
   let heroCardOriginalParent = heroCard?.parentElement;
@@ -292,6 +304,7 @@ function initApp() {
 
   const adminCommandsHelp = () => `Admin commands:<br>
     - <span class="cmd-highlight">y</span>          : Enter Resume Management mode (Add/Delete resumes)<br>
+    - <span class="cmd-highlight">gui</span>        : Open visual File Manager (browse, preview, download)<br>
     - <span class="cmd-highlight">up</span>         : Securely upload private file<br>
     - <span class="cmd-highlight">ls</span>         : List private files with sequential indices<br>
     - <span class="cmd-highlight">vw &lt;idx&gt;</span>     : Securely preview file in app (e.g. vw 1)<br>
@@ -344,6 +357,171 @@ function initApp() {
 
   adminPreviewClose?.addEventListener('click', closeAdminPreviewModal);
   adminPreviewOverlay?.addEventListener('click', closeAdminPreviewModal);
+
+  // ====================================================================
+  // Admin GUI File Manager Modal Logic
+  // ====================================================================
+  function getFileIcon(filename) {
+    const ext = (filename || '').split('.').pop().toLowerCase();
+    const iconMap = {
+      pdf: { icon: 'fa-solid fa-file-pdf', color: '#e74c3c' },
+      doc: { icon: 'fa-solid fa-file-word', color: '#2b579a' },
+      docx: { icon: 'fa-solid fa-file-word', color: '#2b579a' },
+      xls: { icon: 'fa-solid fa-file-excel', color: '#217346' },
+      xlsx: { icon: 'fa-solid fa-file-excel', color: '#217346' },
+      csv: { icon: 'fa-solid fa-file-csv', color: '#217346' },
+      ppt: { icon: 'fa-solid fa-file-powerpoint', color: '#d24726' },
+      pptx: { icon: 'fa-solid fa-file-powerpoint', color: '#d24726' },
+      png: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      jpg: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      jpeg: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      gif: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      webp: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      svg: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      bmp: { icon: 'fa-solid fa-file-image', color: '#9b59b6' },
+      mp4: { icon: 'fa-solid fa-file-video', color: '#e67e22' },
+      mov: { icon: 'fa-solid fa-file-video', color: '#e67e22' },
+      avi: { icon: 'fa-solid fa-file-video', color: '#e67e22' },
+      mkv: { icon: 'fa-solid fa-file-video', color: '#e67e22' },
+      mp3: { icon: 'fa-solid fa-file-audio', color: '#1abc9c' },
+      wav: { icon: 'fa-solid fa-file-audio', color: '#1abc9c' },
+      zip: { icon: 'fa-solid fa-file-zipper', color: '#f39c12' },
+      rar: { icon: 'fa-solid fa-file-zipper', color: '#f39c12' },
+      '7z': { icon: 'fa-solid fa-file-zipper', color: '#f39c12' },
+      tar: { icon: 'fa-solid fa-file-zipper', color: '#f39c12' },
+      gz: { icon: 'fa-solid fa-file-zipper', color: '#f39c12' },
+      txt: { icon: 'fa-solid fa-file-lines', color: '#95a5a6' },
+      md: { icon: 'fa-solid fa-file-lines', color: '#95a5a6' },
+      json: { icon: 'fa-solid fa-file-code', color: '#3498db' },
+      js: { icon: 'fa-solid fa-file-code', color: '#f7df1e' },
+      py: { icon: 'fa-solid fa-file-code', color: '#3776ab' },
+      html: { icon: 'fa-solid fa-file-code', color: '#e34c26' },
+      css: { icon: 'fa-solid fa-file-code', color: '#264de4' },
+    };
+    return iconMap[ext] || { icon: 'fa-solid fa-file', color: 'var(--accent-gold)' };
+  }
+
+  function formatFileSize(bytes) {
+    if (!bytes && bytes !== 0) return '—';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  async function loadAdminGuiFiles() {
+    if (!adminGuiGrid) return;
+
+    // Show loading
+    adminGuiGrid.innerHTML = `
+      <div style="text-align: center; padding: 3rem; color: var(--text-secondary); width: 100%; grid-column: 1 / -1;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
+        <p>Decrypting file index...</p>
+      </div>
+    `;
+
+    // Reset to selection view
+    if (adminGuiSelectionView) adminGuiSelectionView.style.display = 'flex';
+    if (adminGuiPreviewView) adminGuiPreviewView.style.display = 'none';
+    if (adminGuiIframe) adminGuiIframe.src = '';
+
+    let files = [];
+    try {
+      const res = await fetch('/api/admin/files');
+      const data = await res.json();
+      if (res.ok && data.files) {
+        files = data.files;
+      } else {
+        throw new Error(data.error || 'Failed to fetch files');
+      }
+    } catch (e) {
+      adminGuiGrid.innerHTML = `
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary); width: 100%; grid-column: 1 / -1;">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 1rem; color: #e74c3c;"></i>
+          <p>Failed to load files</p>
+          <p style="font-size: 0.85em; opacity: 0.7; margin-top: 0.5rem;">${e.message}</p>
+        </div>
+      `;
+      return;
+    }
+
+    adminGuiGrid.innerHTML = '';
+
+    if (files.length === 0) {
+      adminGuiGrid.innerHTML = `
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary); width: 100%; grid-column: 1 / -1;">
+          <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--border-color-gold);"></i>
+          <p>No encrypted files stored</p>
+          <p style="font-size: 0.85em; opacity: 0.7; margin-top: 0.5rem;">Use the CLI <span style="color: var(--accent-gold);">up</span> command to upload files.</p>
+        </div>
+      `;
+      return;
+    }
+
+    files.forEach(f => {
+      const fileIcon = getFileIcon(f.name);
+      const displayName = f.name.length > 32 ? f.name.substring(0, 29) + '...' : f.name;
+      const dateStr = new Date(f.uploadedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      const sizeStr = formatFileSize(f.size);
+
+      const card = document.createElement('div');
+      card.className = 'resume-card glass-card admin-gui-file-card';
+      card.innerHTML = `
+        <div class="resume-card-icon" style="border-color: ${fileIcon.color}30;">
+          <i class="${fileIcon.icon}" style="color: ${fileIcon.color};"></i>
+        </div>
+        <div class="resume-card-info">
+          <h3 title="${f.name}">${displayName}</h3>
+          <span class="resume-card-meta">${sizeStr} | ${dateStr}</span>
+        </div>
+        <div class="resume-card-actions">
+          <button class="btn btn-secondary btn-sm gui-preview-btn" data-index="${f.index}" data-name="${f.name}">Preview</button>
+          <a href="/api/admin/files/${f.index}/download" class="btn btn-primary btn-sm download-btn" title="Download"><i class="fa-solid fa-download"></i></a>
+        </div>
+      `;
+
+      adminGuiGrid.appendChild(card);
+    });
+
+    // Wire preview buttons
+    adminGuiGrid.querySelectorAll('.gui-preview-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = btn.getAttribute('data-index');
+        const name = btn.getAttribute('data-name');
+        openAdminGuiPreview(idx, name);
+      });
+    });
+  }
+
+  function openAdminGuiPreview(index, name) {
+    if (adminGuiSelectionView) adminGuiSelectionView.style.display = 'none';
+    if (adminGuiPreviewView) adminGuiPreviewView.style.display = 'flex';
+    if (adminGuiIframe) adminGuiIframe.src = `/api/admin/files/${index}/preview`;
+    if (adminGuiPreviewTitle) adminGuiPreviewTitle.textContent = name;
+    if (adminGuiDownloadBtn) {
+      adminGuiDownloadBtn.href = `/api/admin/files/${index}/download`;
+      adminGuiDownloadBtn.setAttribute('download', name);
+    }
+  }
+
+  function openAdminGuiModal() {
+    if (adminGuiModal) {
+      adminGuiModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      loadAdminGuiFiles();
+    }
+  }
+
+  function closeAdminGuiModal() {
+    if (adminGuiModal) {
+      adminGuiModal.classList.remove('active');
+      if (adminGuiIframe) adminGuiIframe.src = '';
+      document.body.style.overflow = '';
+    }
+  }
+
+  adminGuiClose?.addEventListener('click', closeAdminGuiModal);
+  adminGuiOverlay?.addEventListener('click', closeAdminGuiModal);
+  adminGuiBackBtn?.addEventListener('click', loadAdminGuiFiles);
 
   // Auto-fit image previews in the iframe to prevent zoomed-in layouts
   adminPreviewIframe?.addEventListener('load', () => {
@@ -635,6 +813,12 @@ function initApp() {
       
       if (cleanCmd === 'help') {
         printLine(adminCommandsHelp(), 'info-msg');
+        return;
+      }
+
+      if (cleanCmd === 'gui') {
+        printLine('<span class="success-msg"><i class="fa-solid fa-window-restore"></i> Launching visual File Manager...</span>', 'info-msg');
+        setTimeout(() => openAdminGuiModal(), 300);
         return;
       }
 
@@ -1198,6 +1382,7 @@ function initApp() {
       closeModal();
       closeResumeModal();
       closeAdminPreviewModal();
+      closeAdminGuiModal();
     }
   });
 

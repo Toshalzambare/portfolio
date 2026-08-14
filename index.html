@@ -612,6 +612,44 @@
     </div>
   </div>
 
+  <!-- Admin GUI File Manager Modal -->
+  <div class="modal" id="admin-gui-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass-card admin-gui-modal-content">
+      <button class="modal-close" id="admin-gui-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body resume-modal-body">
+        <!-- File Selection View -->
+        <div id="admin-gui-selection-view" style="display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
+          <div class="admin-gui-header">
+            <div class="admin-gui-header-info">
+              <h3 class="modal-project-title"><i class="fa-solid fa-vault" style="margin-right: 0.5rem; color: var(--accent-gold);"></i>Encrypted File Manager</h3>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse, preview, and download your securely stored files</p>
+            </div>
+          </div>
+          <div class="resume-grid" id="admin-gui-grid">
+            <!-- Dynamically populated file cards -->
+            <div class="resume-loading" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
+              <p>Decrypting file index...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Preview View -->
+        <div id="admin-gui-preview-view" style="display: none; flex-direction: column; height: 100%;">
+          <div class="resume-preview-header admin-gui-preview-header">
+            <button id="admin-gui-back-btn" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Files</button>
+            <span id="admin-gui-preview-title">File Preview</span>
+            <a id="admin-gui-download-btn" href="#" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
+          </div>
+          <div class="resume-preview-body" style="flex-grow: 1; margin-top: 1rem; height: calc(100% - 60px);">
+            <iframe id="admin-gui-iframe" src="" width="100%" height="100%" style="border: none; border-radius: 8px; background: #0b0f19;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
