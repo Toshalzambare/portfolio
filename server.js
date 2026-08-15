@@ -45,17 +45,41 @@ try {
   console.warn('Failed to initialize local resumes directory:', err.message);
 }
 
-// Copy default resumes from workspace folders if they exist and local resumes folder is empty
-try {
-  const localResumes = fs.readdirSync(RESUMES_DIR);
-  if (localResumes.filter(f => f.toLowerCase().endsWith('.pdf')).length === 0) {
-    console.log('[Startup] Resumes folder is empty. Copying defaults...');
-    // Copy public/resume.pdf
-    const defaultResumePath = path.join(__dirname, 'public', 'resume.pdf');
-    if (fs.existsSync(defaultResumePath)) {
-      fs.copyFileSync(defaultResumePath, path.join(RESUMES_DIR, 'Toshal_Zambare_AI_Resume.pdf'));
+// Helper: Resolve file buffer from known workspace locations
+function findWorkspaceFile(relativePath) {
+  const possiblePaths = [
+    path.join(__dirname, relativePath),
+    path.join(process.cwd(), relativePath),
+    path.join(__dirname, 'dist', relativePath),
+    path.join(process.cwd(), 'dist', relativePath)
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p) && fs.statSync(p).isFile()) {
+      return { path: p, buffer: fs.readFileSync(p) };
     }
-    // Copy from new_resume folder if exists
+  }
+  return null;
+}
+
+// Copy default resumes from workspace folders if local resumes folder is empty
+try {
+  const localResumes = fs.existsSync(RESUMES_DIR) ? fs.readdirSync(RESUMES_DIR) : [];
+  if (localResumes.filter(f => f.toLowerCase().endsWith('.pdf')).length === 0) {
+    console.log('[Startup] Local resumes folder is empty. Copying defaults...');
+    
+    // Copy CV
+    const cvFile = findWorkspaceFile('public/CV.pdf') || findWorkspaceFile('new_cv.pdf');
+    if (cvFile) {
+      fs.writeFileSync(path.join(RESUMES_DIR, 'Toshal_Zambare_CV.pdf'), cvFile.buffer);
+    }
+    
+    // Copy Resume
+    const resumeFile = findWorkspaceFile('public/resume.pdf');
+    if (resumeFile) {
+      fs.writeFileSync(path.join(RESUMES_DIR, 'Toshal_Zambare_AI_Resume.pdf'), resumeFile.buffer);
+    }
+    
+    // Copy from new_resume directory if available
     const srcNewResumeDir = path.join(__dirname, 'new_resume');
     if (fs.existsSync(srcNewResumeDir)) {
       const defaultFiles = fs.readdirSync(srcNewResumeDir);
@@ -65,7 +89,7 @@ try {
         }
       }
     }
-    console.log('[Startup] Default resumes copied.');
+    console.log('[Startup] Default resumes initialized.');
   }
 } catch (err) {
   console.warn('Failed to copy default resumes on startup:', err.message);
@@ -86,24 +110,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate limiting to prevent brute forcing
+// Rate limiting
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   message: { error: 'Too many login attempts. Please try again after 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 API requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   message: { error: 'Too many requests. Please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Apply API rate limiting
 app.use('/api/', apiLimiter);
 
 // ----------------------------------------------------
@@ -119,7 +142,7 @@ function getEncryptionKey() {
   return Buffer.from(keyHex, 'hex');
 }
 
-// Encrypt file buffer
+// Encrypt file buffer with AES-256-GCM
 function encrypt(buffer) {
   const key = getEncryptionKey();
   const iv = crypto.randomBytes(12); // GCM standard IV is 12 bytes
@@ -132,7 +155,7 @@ function encrypt(buffer) {
   return Buffer.concat([iv, tag, encrypted]);
 }
 
-// Decrypt file buffer
+// Decrypt file buffer with AES-256-GCM (Returns original plaintext buffer)
 function decrypt(combinedBuffer) {
   const key = getEncryptionKey();
   
@@ -150,16 +173,148 @@ function decrypt(combinedBuffer) {
   return Buffer.concat([decipher.update(encryptedData), decipher.final()]);
 }
 
+// Helper: Infer MIME type from file extension
+function getMimeType(fileName) {
+  const ext = path.extname(fileName || '').toLowerCase();
+  const mimeMap = {
+    '.pdf': 'application/pdf',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.bmp': 'image/bmp',
+    '.mp4': 'video/mp4',
+    '.mov': 'video/quicktime',
+    '.mp3': 'audio/mpeg',
+    '.wav': 'audio/wav',
+    '.txt': 'text/plain; charset=utf-8',
+    '.md': 'text/markdown; charset=utf-8',
+    '.json': 'application/json',
+    '.js': 'text/javascript; charset=utf-8',
+    '.html': 'text/html; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.zip': 'application/zip',
+    '.tar': 'application/x-tar',
+    '.gz': 'application/gzip',
+    '.7z': 'application/x-7z-compressed',
+    '.rar': 'application/vnd.rar',
+    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    '.doc': 'application/msword',
+    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.xls': 'application/vnd.ms-excel',
+    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    '.ppt': 'application/vnd.ms-powerpoint',
+    '.csv': 'text/csv; charset=utf-8'
+  };
+  return mimeMap[ext] || 'application/octet-stream';
+}
+
 // ----------------------------------------------------
 // Storage Adapters (Local Filesystem vs Vercel Blob)
 // ----------------------------------------------------
 const isVercelBlobEnabled = () => {
-  // BLOB_STORE_ID is set when a Blob store is linked to the project.
-  // The @vercel/blob SDK internally resolves auth via its @vercel/oidc dependency
-  // at request time — we do NOT need VERCEL_OIDC_TOKEN in the environment.
-  // BLOB_READ_WRITE_TOKEN is the legacy static token fallback.
   return !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 };
+
+// Universal Blob Put helper (supports both private and public Blob store configurations)
+async function blobPut(pathname, buffer, options = {}) {
+  try {
+    return await put(pathname, buffer, {
+      access: 'private',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      ...options
+    });
+  } catch (err) {
+    if (err.name === 'BlobAccessError' || (err.message && err.message.toLowerCase().includes('private'))) {
+      return await put(pathname, buffer, {
+        access: 'public',
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        ...options
+      });
+    }
+    throw err;
+  }
+}
+
+// Universal Blob Get helper (supports reading private and public blobs)
+async function blobGet(pathname) {
+  // 1. Try private get
+  try {
+    const data = await get(pathname, { access: 'private', useCache: false });
+    if (data && data.stream) return data;
+  } catch (e) {}
+
+  // 2. Try public get
+  try {
+    const data = await get(pathname, { access: 'public', useCache: false });
+    if (data && data.stream) return data;
+  } catch (e) {}
+
+  // 3. Try standard get
+  try {
+    const data = await get(pathname, { useCache: false });
+    if (data && data.stream) return data;
+  } catch (e) {}
+
+  // 4. Try list + fetch fallback
+  try {
+    const { blobs } = await list({ prefix: pathname });
+    const target = blobs.find(b => b.pathname === pathname || b.pathname.endsWith(path.basename(pathname)));
+    if (target && (target.downloadUrl || target.url)) {
+      const url = target.downloadUrl || target.url;
+      const resp = await fetch(url);
+      if (resp.ok) {
+        return { stream: resp.body, size: target.size };
+      }
+    }
+  } catch (e) {}
+
+  return null;
+}
+
+// Auto-seed default resumes into Vercel Blob on startup/first load
+let blobResumesSeeded = false;
+async function ensureVercelBlobResumes() {
+  if (!isVercelBlobEnabled() || blobResumesSeeded) return;
+  
+  try {
+    const { blobs } = await list({ prefix: 'resumes/' });
+    const pdfBlobs = blobs.filter(b => b.pathname !== 'resumes/' && b.pathname.toLowerCase().endsWith('.pdf'));
+    
+    if (pdfBlobs.length === 0) {
+      console.log('[Blob Startup] Resumes in Vercel Blob are empty. Seeding defaults...');
+      
+      const cvFile = findWorkspaceFile('public/CV.pdf') || findWorkspaceFile('new_cv.pdf');
+      if (cvFile) {
+        await blobPut('resumes/Toshal_Zambare_CV.pdf', cvFile.buffer, { contentType: 'application/pdf' });
+      }
+
+      const resumeFile = findWorkspaceFile('public/resume.pdf');
+      if (resumeFile) {
+        await blobPut('resumes/Toshal_Zambare_AI_Resume.pdf', resumeFile.buffer, { contentType: 'application/pdf' });
+      }
+
+      const srcNewResumeDir = path.join(__dirname, 'new_resume');
+      if (fs.existsSync(srcNewResumeDir)) {
+        const files = fs.readdirSync(srcNewResumeDir);
+        for (const file of files) {
+          if (file.toLowerCase().endsWith('.pdf')) {
+            const buf = fs.readFileSync(path.join(srcNewResumeDir, file));
+            await blobPut(`resumes/${file}`, buf, { contentType: 'application/pdf' });
+          }
+        }
+      }
+      console.log('[Blob Startup] Default resumes seeded to Vercel Blob.');
+    }
+    blobResumesSeeded = true;
+  } catch (err) {
+    console.warn('[Blob Startup] Vercel Blob resume check:', err.message);
+  }
+}
 
 // Log storage mode at startup for debugging
 console.log('[Blob Debug] BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
@@ -173,12 +328,11 @@ async function getMetadata() {
   
   if (isVercelBlobEnabled()) {
     try {
-      console.log('[Blob Debug] getMetadata: Reading metadata via get(pathname)');
-      const blobData = await get('private-uploads/metadata.json', { access: 'private', useCache: false });
+      console.log('[Blob Debug] getMetadata: Resolving private-uploads/metadata.json');
+      const blobData = await blobGet('private-uploads/metadata.json');
       
-      // get() returns null if the blob doesn't exist
-      if (!blobData) {
-        console.log('[Blob Debug] getMetadata: No metadata blob found, returning defaults');
+      if (!blobData || !blobData.stream) {
+        console.log('[Blob Debug] getMetadata: No metadata blob found, returning default empty list');
         return defaultMeta;
       }
       
@@ -210,10 +364,7 @@ async function saveMetadata(metadata) {
   
   if (isVercelBlobEnabled()) {
     console.log('[Blob Debug] saveMetadata: Writing encrypted metadata to Blob');
-    const result = await put('private-uploads/metadata.json', encrypted, {
-      access: 'private',
-      addRandomSuffix: false,
-      allowOverwrite: true,
+    const result = await blobPut('private-uploads/metadata.json', encrypted, {
       contentType: 'application/octet-stream',
     });
     console.log('[Blob Debug] saveMetadata: Saved to', result.url);
@@ -229,9 +380,7 @@ async function saveFile(id, buffer) {
   
   if (isVercelBlobEnabled()) {
     console.log(`[Blob Debug] saveFile: Uploading file "${id}" (${encrypted.length} bytes encrypted) to Vercel Blob`);
-    const result = await put(`private-uploads/${id}`, encrypted, {
-      access: 'private',
-      addRandomSuffix: false,
+    const result = await blobPut(`private-uploads/${id}`, encrypted, {
       contentType: 'application/octet-stream',
     });
     console.log(`[Blob Debug] saveFile: Successfully saved to ${result.url}`);
@@ -242,18 +391,22 @@ async function saveFile(id, buffer) {
   }
 }
 
-// Get decrypted file buffer
+// Get decrypted file buffer (Always decrypts and returns original plaintext buffer!)
 async function getFile(id) {
   if (isVercelBlobEnabled()) {
     const blobPath = `private-uploads/${id}`;
-    console.log(`[Blob Debug] getFile: Reading "${blobPath}" via get(pathname)`);
+    console.log(`[Blob Debug] getFile: Reading "${blobPath}" from Vercel Blob`);
     
-    const blobData = await get(blobPath, { access: 'private', useCache: false });
-    if (!blobData) throw new Error('File not found in Vercel Blob');
+    const blobData = await blobGet(blobPath);
+    if (!blobData || !blobData.stream) {
+      throw new Error('File not found in Vercel Blob');
+    }
     
-    console.log(`[Blob Debug] getFile: Got blob, reading stream`);
     const arrayBuf = await new Response(blobData.stream).arrayBuffer();
-    return decrypt(Buffer.from(arrayBuf));
+    const encryptedBuf = Buffer.from(arrayBuf);
+    
+    // Decrypt AES-256-GCM ciphertext to return exact original plaintext
+    return decrypt(encryptedBuf);
   } else {
     const filePath = path.join(UPLOADS_DIR, id);
     if (!fs.existsSync(filePath)) throw new Error('File not found on local disk');
@@ -267,14 +420,16 @@ async function getFile(id) {
 async function removeFile(id) {
   if (isVercelBlobEnabled()) {
     const blobPath = `private-uploads/${id}`;
-    console.log(`[Blob Debug] removeFile: Resolving "${blobPath}" via head()`);
+    console.log(`[Blob Debug] removeFile: Resolving "${blobPath}"`);
     try {
-      const blobMeta = await head(blobPath);
-      console.log(`[Blob Debug] removeFile: Deleting ${blobMeta.url}`);
-      await del(blobMeta.url);
+      const { blobs } = await list({ prefix: blobPath });
+      const targetBlob = blobs.find(b => b.pathname === blobPath || b.pathname.endsWith(id));
+      if (targetBlob && targetBlob.url) {
+        await del(targetBlob.url);
+        console.log(`[Blob Debug] removeFile: Deleted Vercel Blob: ${targetBlob.url}`);
+      }
     } catch (e) {
-      // head() throws BlobNotFoundError if not found — silently skip
-      console.log(`[Blob Debug] removeFile: Blob "${blobPath}" not found, skipping`);
+      console.log(`[Blob Debug] removeFile: Blob "${blobPath}" delete skipped:`, e.message);
     }
   } else {
     const filePath = path.join(UPLOADS_DIR, id);
@@ -362,7 +517,7 @@ app.post('/api/admin/login', loginLimiter, async (req, res) => {
   }
 });
 
-// Admin Check Status (Verify if still authenticated)
+// Admin Check Status
 app.get('/api/admin/status', (req, res) => {
   const token = req.cookies.admin_session;
   if (!token) return res.json({ authenticated: false });
@@ -382,15 +537,14 @@ app.post('/api/admin/logout', (req, res) => {
   return res.json({ success: true, message: 'Logged out successfully' });
 });
 
-// Admin: List Files (Access strictly guarded)
+// Admin: List Files
 app.get('/api/admin/files', authenticateJWT, async (req, res) => {
   try {
     const metadata = await getMetadata();
-    // Return sanitized file information (do not leak internal IDs to the client)
     const sanitizedFiles = metadata.files.map((file, idx) => ({
-      index: idx + 1, // transient 1-based index
+      index: idx + 1,
       name: file.originalName,
-      size: file.size || null, // may be null for files uploaded before this field existed
+      size: file.size || null,
       uploadedAt: file.uploadedAt,
     }));
     return res.json({ files: sanitizedFiles });
@@ -403,7 +557,7 @@ app.get('/api/admin/files', authenticateJWT, async (req, res) => {
 // Setup multer for in-memory upload buffering (max 16MB)
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 16 * 1024 * 1024 }, // 16MB limit
+  limits: { fileSize: 16 * 1024 * 1024 },
 });
 
 // Admin: Upload File
@@ -444,40 +598,101 @@ app.post('/api/admin/upload', authenticateJWT, upload.single('file'), async (req
 // ----------------------------------------------------
 app.get('/api/resumes', async (req, res) => {
   try {
+    await ensureVercelBlobResumes();
+    
     const listData = [];
+    const seenNames = new Set();
+
     if (isVercelBlobEnabled()) {
-      const { blobs } = await list({ prefix: 'resumes/' });
-      for (const blob of blobs) {
-        if (blob.pathname === 'resumes/') continue;
-        const filename = blob.pathname.replace('resumes/', '');
-        listData.push({
-          name: filename,
-          url: `/api/resumes/file/${encodeURIComponent(filename)}`,
-          size: blob.size,
-          uploadedAt: new Date(blob.uploadedAt).getTime()
-        });
-      }
-    } else {
-      if (fs.existsSync(RESUMES_DIR)) {
-        const files = fs.readdirSync(RESUMES_DIR);
-        for (const file of files) {
-          const filePath = path.join(RESUMES_DIR, file);
-          const stats = fs.statSync(filePath);
-          if (stats.isFile()) {
+      try {
+        const { blobs } = await list({ prefix: 'resumes/' });
+        for (const blob of blobs) {
+          if (blob.pathname === 'resumes/') continue;
+          const filename = blob.pathname.replace(/^resumes\//, '');
+          if (filename && filename.toLowerCase().endsWith('.pdf') && !seenNames.has(filename.toLowerCase())) {
+            seenNames.add(filename.toLowerCase());
             listData.push({
-              name: file,
-              url: `/api/resumes/file/${encodeURIComponent(file)}`,
-              size: stats.size,
-              uploadedAt: stats.mtime.getTime()
+              name: filename,
+              url: `/api/resumes/file/${encodeURIComponent(filename)}`,
+              size: blob.size,
+              uploadedAt: new Date(blob.uploadedAt).getTime()
             });
           }
         }
+      } catch (blobErr) {
+        console.warn('[Blob] Failed to list resumes from Blob:', blobErr.message);
       }
     }
-    
-    // Sort: newer first
-    listData.sort((a, b) => b.uploadedAt - a.uploadedAt);
-    
+
+    // Also check local folders
+    const resumeDirsToCheck = [
+      RESUMES_DIR,
+      path.join(__dirname, 'public', 'resumes'),
+      path.join(process.cwd(), 'public', 'resumes'),
+      path.join(__dirname, 'new_resume'),
+      path.join(process.cwd(), 'new_resume')
+    ];
+
+    for (const dir of resumeDirsToCheck) {
+      if (fs.existsSync(dir)) {
+        try {
+          const files = fs.readdirSync(dir);
+          for (const file of files) {
+            if (file.toLowerCase().endsWith('.pdf') && !seenNames.has(file.toLowerCase())) {
+              const filePath = path.join(dir, file);
+              const stats = fs.statSync(filePath);
+              if (stats.isFile()) {
+                seenNames.add(file.toLowerCase());
+                listData.push({
+                  name: file,
+                  url: `/api/resumes/file/${encodeURIComponent(file)}`,
+                  size: stats.size,
+                  uploadedAt: stats.mtime.getTime()
+                });
+              }
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    // Ensure Toshal_Zambare_CV.pdf is always present in list
+    if (!seenNames.has('toshal_zambare_cv.pdf')) {
+      const cvFile = findWorkspaceFile('public/CV.pdf') || findWorkspaceFile('new_cv.pdf');
+      if (cvFile) {
+        seenNames.add('toshal_zambare_cv.pdf');
+        listData.push({
+          name: 'Toshal_Zambare_CV.pdf',
+          url: `/api/resumes/file/Toshal_Zambare_CV.pdf`,
+          size: cvFile.buffer.length,
+          uploadedAt: Date.now()
+        });
+      }
+    }
+
+    // Ensure Toshal_Zambare_AI_Resume.pdf is present
+    if (!seenNames.has('toshal_zambare_ai_resume.pdf') && !seenNames.has('resume.pdf')) {
+      const resumeFile = findWorkspaceFile('public/resume.pdf');
+      if (resumeFile) {
+        seenNames.add('toshal_zambare_ai_resume.pdf');
+        listData.push({
+          name: 'Toshal_Zambare_AI_Resume.pdf',
+          url: `/api/resumes/file/Toshal_Zambare_AI_Resume.pdf`,
+          size: resumeFile.buffer.length,
+          uploadedAt: Date.now()
+        });
+      }
+    }
+
+    // Sort: CV first, then newest
+    listData.sort((a, b) => {
+      const aIsCv = a.name.toLowerCase().includes('cv');
+      const bIsCv = b.name.toLowerCase().includes('cv');
+      if (aIsCv && !bIsCv) return -1;
+      if (!aIsCv && bIsCv) return 1;
+      return b.uploadedAt - a.uploadedAt;
+    });
+
     return res.json({ resumes: listData });
   } catch (error) {
     console.error('Error fetching resumes:', error);
@@ -486,35 +701,77 @@ app.get('/api/resumes', async (req, res) => {
 });
 
 // ----------------------------------------------------
-// Public Resume API: Proxy Resume File (Allows public access to private blobs)
+// Public Resume API: Proxy Resume File (Allows public access to blobs and local storage)
 // ----------------------------------------------------
 app.get('/api/resumes/file/:name', async (req, res) => {
   const resumeName = req.params.name;
   if (!resumeName) return res.status(400).json({ error: 'Resume name required' });
 
+  const safeName = path.basename(resumeName);
+  const isDownload = req.query.download === 'true' || req.query.download === '1';
+
   try {
     if (isVercelBlobEnabled()) {
-      const blobPath = `resumes/${resumeName}`;
+      const blobPath = `resumes/${safeName}`;
       try {
-        const blobData = await get(blobPath, { access: 'private', useCache: false });
-        if (!blobData) return res.status(404).send('Not Found');
-        
-        res.setHeader('Content-Type', 'application/pdf');
-        // stream the response
-        const arrayBuf = await new Response(blobData.stream).arrayBuffer();
-        return res.send(Buffer.from(arrayBuf));
-      } catch (e) {
-        return res.status(404).send('Resume not found in Blob');
-      }
-    } else {
-      const filePath = path.join(RESUMES_DIR, resumeName);
-      if (fs.existsSync(filePath)) {
-        res.setHeader('Content-Type', 'application/pdf');
-        return res.sendFile(filePath);
-      } else {
-        return res.status(404).send('Not Found');
+        const blobData = await blobGet(blobPath);
+        if (blobData && blobData.stream) {
+          const arrayBuf = await new Response(blobData.stream).arrayBuffer();
+          const buffer = Buffer.from(arrayBuf);
+          res.setHeader('Content-Type', 'application/pdf');
+          const dispType = isDownload ? 'attachment' : 'inline';
+          res.setHeader('Content-Disposition', `${dispType}; filename="${safeName.replace(/"/g, '')}"; filename*=UTF-8''${encodeURIComponent(safeName)}`);
+          res.setHeader('Content-Length', buffer.length);
+          return res.send(buffer);
+        }
+      } catch (blobErr) {
+        console.warn('[Blob] Could not fetch resume from Blob, falling back:', blobErr.message);
       }
     }
+
+    // Check known local files
+    const localSearch = [
+      path.join(RESUMES_DIR, safeName),
+      path.join(__dirname, 'public', 'resumes', safeName),
+      path.join(process.cwd(), 'public', 'resumes', safeName),
+      path.join(__dirname, 'dist', 'resumes', safeName),
+      path.join(__dirname, 'public', safeName),
+      path.join(process.cwd(), 'public', safeName),
+      path.join(__dirname, 'new_resume', safeName),
+      path.join(process.cwd(), 'new_resume', safeName)
+    ];
+
+    for (const filePath of localSearch) {
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const dispType = isDownload ? 'attachment' : 'inline';
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `${dispType}; filename="${safeName.replace(/"/g, '')}"; filename*=UTF-8''${encodeURIComponent(safeName)}`);
+        return res.sendFile(filePath);
+      }
+    }
+
+    // Special alias check for CV.pdf and resume.pdf
+    if (safeName.toLowerCase().includes('cv')) {
+      const cvFile = findWorkspaceFile('public/CV.pdf') || findWorkspaceFile('new_cv.pdf');
+      if (cvFile) {
+        const dispType = isDownload ? 'attachment' : 'inline';
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `${dispType}; filename="Toshal_Zambare_CV.pdf"`);
+        return res.sendFile(cvFile.path);
+      }
+    }
+
+    if (safeName.toLowerCase().includes('resume')) {
+      const resumeFile = findWorkspaceFile('public/resume.pdf');
+      if (resumeFile) {
+        const dispType = isDownload ? 'attachment' : 'inline';
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `${dispType}; filename="Toshal_Zambare_AI_Resume.pdf"`);
+        return res.sendFile(resumeFile.path);
+      }
+    }
+
+    return res.status(404).send('Resume file not found');
   } catch (err) {
     console.error('Error fetching resume file:', err);
     return res.status(500).send('Internal Server Error');
@@ -535,10 +792,7 @@ app.post('/api/admin/resumes/upload', authenticateJWT, upload.single('file'), as
 
     if (isVercelBlobEnabled()) {
       console.log(`[Upload Debug] Uploading resume to Vercel Blob: "resumes/${originalName}"`);
-      const result = await put(`resumes/${originalName}`, req.file.buffer, {
-        access: 'private',
-        addRandomSuffix: false,
-        allowOverwrite: true,
+      const result = await blobPut(`resumes/${originalName}`, req.file.buffer, {
         contentType: 'application/pdf'
       });
       console.log(`[Upload Debug] Resume saved to ${result.url}`);
@@ -562,12 +816,14 @@ app.delete('/api/admin/resumes/:name', authenticateJWT, async (req, res) => {
     return res.status(400).json({ error: 'Resume name required' });
   }
 
+  const safeName = path.basename(resumeName);
+
   try {
     if (isVercelBlobEnabled()) {
-      const pathname = `resumes/${resumeName}`;
+      const pathname = `resumes/${safeName}`;
       console.log(`[Blob Debug] Deleting resume "${pathname}"`);
       const { blobs } = await list({ prefix: pathname });
-      const targetBlob = blobs.find(b => b.pathname === pathname);
+      const targetBlob = blobs.find(b => b.pathname === pathname || b.pathname.endsWith(safeName));
       
       if (targetBlob) {
         await del(targetBlob.url);
@@ -576,7 +832,7 @@ app.delete('/api/admin/resumes/:name', authenticateJWT, async (req, res) => {
         return res.status(404).json({ error: 'Resume not found in Blob storage' });
       }
     } else {
-      const filePath = path.join(RESUMES_DIR, resumeName);
+      const filePath = path.join(RESUMES_DIR, safeName);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log(`Deleted local resume: ${filePath}`);
@@ -585,7 +841,7 @@ app.delete('/api/admin/resumes/:name', authenticateJWT, async (req, res) => {
       }
     }
 
-    return res.json({ success: true, message: `Successfully deleted resume "${resumeName}"` });
+    return res.json({ success: true, message: `Successfully deleted resume "${safeName}"` });
   } catch (error) {
     console.error('Error deleting resume:', error);
     return res.status(500).json({ error: 'Failed to delete resume' });
@@ -596,18 +852,19 @@ app.delete('/api/admin/resumes/:name', authenticateJWT, async (req, res) => {
 async function getFileByRequestIndex(req, res) {
   const requestIndex = parseInt(req.params.index, 10);
   if (isNaN(requestIndex) || requestIndex <= 0) {
-    return res.status(404).json({ error: 'Not Found' });
+    return null;
   }
 
   try {
     const metadata = await getMetadata();
     const fileIndex = requestIndex - 1;
     
-    if (fileIndex >= metadata.files.length) {
-      return res.status(404).json({ error: 'Not Found' });
+    if (fileIndex < 0 || fileIndex >= metadata.files.length) {
+      return null;
     }
 
     const fileRecord = metadata.files[fileIndex];
+    // Decrypt file data to get original plaintext buffer
     const fileBuffer = await getFile(fileRecord.id);
     
     return {
@@ -620,25 +877,19 @@ async function getFileByRequestIndex(req, res) {
   }
 }
 
-// Admin: Preview File
+// Admin: Preview File (Decrypted preview)
 app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => {
   const result = await getFileByRequestIndex(req, res);
-  if (!result) return res.status(404).json({ error: 'Not Found' });
+  if (!result) return res.status(404).json({ error: 'File not found or decryption failed' });
 
-  // Infer content type from file extension (guard against missing name)
   const fileName = result.name || 'file';
   const ext = path.extname(fileName).toLowerCase();
   const imageExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg'];
   
-  // For images: wrap in a styled HTML page so they display properly in the iframe
+  // For images: wrap in a responsive dark viewer page
   if (imageExts.includes(ext)) {
     const base64 = result.buffer.toString('base64');
-    let mimeType = 'image/png';
-    if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
-    else if (ext === '.webp') mimeType = 'image/webp';
-    else if (ext === '.gif') mimeType = 'image/gif';
-    else if (ext === '.bmp') mimeType = 'image/bmp';
-    else if (ext === '.svg') mimeType = 'image/svg+xml';
+    let mimeType = getMimeType(fileName);
     
     const html = `<!DOCTYPE html>
 <html><head>
@@ -647,7 +898,7 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0b0f19; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
-    img { max-width: 95vw; max-height: 95dvh; object-fit: contain; border-radius: 4px; }
+    img { max-width: 95vw; max-height: 95dvh; object-fit: contain; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   </style>
 </head><body>
   <img src="data:${mimeType};base64,${base64}" alt="${encodeURIComponent(fileName)}" />
@@ -658,9 +909,7 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
     return res.send(html);
   }
   
-  // For PDFs: Mobile browsers often fail to display inline PDFs in iframes.
-  // We use Mozilla's PDF.js to render the PDF reliably on mobile devices.
-  // For desktop, we let it fall through to serve the raw PDF so users get native viewer features.
+  // For PDFs on Mobile: render via PDF.js for seamless iframe viewing
   if (ext === '.pdf') {
     const userAgent = req.headers['user-agent'] || '';
     const isMobile = /Mobile|Android|iP(hone|od|ad)|IEMobile|BlackBerry|Kindle|Opera M(obi|ini)/i.test(userAgent);
@@ -684,16 +933,13 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
   <div id="pdf-container"><div class="loading">Loading PDF...</div></div>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    
-    // Fetch PDF securely via the download endpoint (cookies are sent automatically)
     const url = '${downloadUrl}';
     const container = document.getElementById('pdf-container');
     
     pdfjsLib.getDocument(url).promise.then(pdf => {
-      container.innerHTML = ''; // clear loading text
+      container.innerHTML = '';
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         pdf.getPage(pageNum).then(page => {
-          // Render at 1.5x scale for better text crispness on high DPI screens
           const viewport = page.getViewport({ scale: 1.5 });
           const canvas = document.createElement('canvas');
           const context = canvas.getContext('2d');
@@ -704,8 +950,7 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
         });
       }
     }).catch(err => {
-      container.innerHTML = '<div class="loading">Error loading PDF. <br><br><a href="' + url + '" style="color: #64ffda; text-decoration: none;">Download File Instead</a></div>';
-      console.error(err);
+      container.innerHTML = '<div class="loading">Error loading PDF. <br><br><a href="' + url + '" style="color: #c5a880; text-decoration: none;">Download File Instead</a></div>';
     });
   </script>
 </body></html>`;
@@ -714,30 +959,34 @@ app.get('/api/admin/files/:index/preview', authenticateJWT, async (req, res) => 
       res.setHeader('Cache-Control', 'private, no-store, max-age=0');
       return res.send(html);
     }
-    // If desktop, it falls through to the raw response below.
   }
   
-  // For other non-image files (and desktop PDFs): send raw content with correct mime type
-  let contentType = 'application/octet-stream';
-  if (ext === '.pdf') contentType = 'application/pdf';
-  else if (ext === '.txt' || ext === '.md') contentType = 'text/plain; charset=utf-8';
-  else if (ext === '.json') contentType = 'application/json';
+  // For desktop PDFs and all other files: send raw decrypted content with proper MIME type
+  const contentType = getMimeType(fileName);
+  const safeAsciiName = fileName.replace(/[^\x20-\x7E]/g, '_').replace(/["\\]/g, '');
 
   res.setHeader('Content-Type', contentType);
-  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(fileName)}"`);
+  res.setHeader('Content-Disposition', `inline; filename="${safeAsciiName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Content-Length', result.buffer.length);
   return res.send(result.buffer);
 });
 
-// Admin: Download File
+// Admin: Download File (Always delivers the original decrypted plaintext file!)
 app.get('/api/admin/files/:index/download', authenticateJWT, async (req, res) => {
   const result = await getFileByRequestIndex(req, res);
-  if (!result) return res.status(404).json({ error: 'Not Found' });
+  if (!result) return res.status(404).json({ error: 'File not found or decryption failed' });
 
   const dlName = result.name || 'download';
-  res.setHeader('Content-Type', 'application/octet-stream');
-  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(dlName)}"`);
+  const contentType = getMimeType(dlName);
+  const safeAsciiName = dlName.replace(/[^\x20-\x7E]/g, '_').replace(/["\\]/g, '');
+
+  res.setHeader('Content-Type', contentType);
+  res.setHeader('Content-Disposition', `attachment; filename="${safeAsciiName}"; filename*=UTF-8''${encodeURIComponent(dlName)}`);
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Content-Length', result.buffer.length);
+  
+  // Sends the fully decrypted original file buffer
   return res.send(result.buffer);
 });
 
@@ -766,7 +1015,7 @@ app.delete('/api/admin/files', authenticateJWT, async (req, res) => {
   }
 });
 
-// Admin: Delete File
+// Admin: Delete Single File
 app.delete('/api/admin/files/:index', authenticateJWT, async (req, res) => {
   const requestIndex = parseInt(req.params.index, 10);
   if (isNaN(requestIndex) || requestIndex <= 0) {
@@ -777,7 +1026,7 @@ app.delete('/api/admin/files/:index', authenticateJWT, async (req, res) => {
     const metadata = await getMetadata();
     const fileIndex = requestIndex - 1;
     
-    if (fileIndex >= metadata.files.length) {
+    if (fileIndex < 0 || fileIndex >= metadata.files.length) {
       return res.status(404).json({ error: 'Not Found' });
     }
 
@@ -811,16 +1060,19 @@ if (fs.existsSync(DIST_DIR)) {
   });
 } else {
   app.use((req, res) => {
-    res.send('Development mode. Front-end served via Vite on port 3000. Express Backend listening on port 5000.');
+    res.send('Portfolio API Backend Active.');
   });
 }
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`\n==================================================`);
-  console.log(`Backend Server listening on port ${PORT}`);
-  console.log(`Storage Mode: ${isVercelBlobEnabled() ? 'Vercel Blob Storage' : 'Local Disk Storage'}`);
-  console.log(`==================================================\n`);
-});
+// Start Server (Only listen if NOT running inside Vercel serverless environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n==================================================`);
+    console.log(`Backend Server listening on port ${PORT}`);
+    console.log(`Storage Mode: ${isVercelBlobEnabled() ? 'Vercel Blob Storage' : 'Local Disk Storage'}`);
+    console.log(`==================================================\n`);
+  });
+}
 
 export default app;
+

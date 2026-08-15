@@ -29,9 +29,10 @@ function initApp() {
   // 2. Typewriter Effect
   const words = [
     "AI & Data Science Engineer",
-    "Full-Stack Developer",
-    "ML Engineer",
-    "DevOps Engineer"
+    "Full-Stack SaaS Developer",
+    "Cloud & DevOps Engineer",
+    "GDG Campus Cloud Lead",
+    "Deep Learning & RAG Architect"
   ];
   let wordIndex = 0;
   let charIndex = 0;
@@ -241,32 +242,44 @@ function initApp() {
 
   const terminalCommands = {
     help: () => `Available commands:<br>
-      - <span class="cmd-highlight">about</span>      : Quick bio summary<br>
+      - <span class="cmd-highlight">about</span>      : Quick bio summary & academics<br>
       - <span class="cmd-highlight">projects</span>   : List featured code architectures<br>
       - <span class="cmd-highlight">skills</span>     : Show technical languages and frameworks<br>
+      - <span class="cmd-highlight">awards</span>     : View hackathon victories & leadership<br>
       - <span class="cmd-highlight">github</span>     : Open GitHub Profile (External Link)<br>
       - <span class="cmd-highlight">linkedin</span>   : Open LinkedIn Network (External Link)<br>
-      - <span class="cmd-highlight">resume</span>     : View complete Resume document<br>
-      - <span class="cmd-highlight">contact</span>    : Print email and contact options<br>
+      - <span class="cmd-highlight">resume</span> / <span class="cmd-highlight">cv</span> : View complete Resumes & CV<br>
+      - <span class="cmd-highlight">contact</span>    : Print email, phone, and contact options<br>
       - <span class="cmd-highlight">fs</span> / <span class="cmd-highlight">fullscreen</span> : Toggle fullscreen mode<br>
       - <span class="cmd-highlight">clear</span>      : Wipe terminal history`,
     about: () => `<strong>Toshal Narendra Zambare</strong><br>
-      DevOps / Cloud & AI / ML Engineer.<br>
-      CGPA: 8.7 / 10 | Savitribai Phule Pune University<br>
-      Experienced in deploying automated CI/CD GitOps pipelines, production microservices, and RAG/LLM platforms.`,
-    projects: () => `Featured Code Projects:<br>
-      <span class="cmd-highlight">[DevOps & Cloud]</span><br>
-      - <strong>XeroxSaaS</strong> (Cloud-Native GitOps K8s Platform)<br>
-      - <strong>AWS FinOps Bot</strong> (Fault-Tolerant Auto-Termination Queue)<br>
-      <span class="cmd-highlight">[AI & ML]</span><br>
-      - <strong>NEAT Flappy Bird</strong> (NeuroEvolution Reinforcement Agent)<br>
-      - <strong>Real-time 3D AI NPC</strong> (Unity, Gemini, Offline Speech)<br>
-      Type <span class="cmd-highlight">projects</span> or click shortcuts to see more.`,
-    skills: () => `Technical Skill Overview:<br>
-      - DevOps & Cloud: K8s, ArgoCD, Docker, AWS (EC2/Lambda), GCP, GHA<br>
-      - AI / ML       : LLMs, LangChain, RAG, NEAT, TensorFlow, OpenCV<br>
-      - Backend & DBs : FastAPI, Flask, Celery, Redis, PostgreSQL, Qdrant<br>
-      - Languages     : Python, Bash, C++, C, Dart`,
+      AI & Data Science Engineer | Cloud Lead @ GDG on Campus MET.<br>
+      B.E. in AI & Data Science (SPPU — MET IOE) — <strong>CGPA: 8.7 / 10.0</strong><br>
+      Experienced in shipping production SaaS (XeroxSaaS), RAG pipelines (Knowledge Hub), autonomous LLM agents (Alert Fatigue Triage Engine), and containerized cloud-native architectures.`,
+    projects: () => `Featured Systems & Architectures:<br>
+      <span class="cmd-highlight">[Full-Stack & SDE]</span><br>
+      - <strong>XeroxSaaS</strong> (Production Document Processing SaaS with WebSockets)<br>
+      - <strong>Scribble</strong> (Containerized Real-Time Multiplayer Canvas Game)<br>
+      - <strong>Docview</strong> (React Native Viewer + Custom Android Native Module)<br>
+      <span class="cmd-highlight">[AI/ML & Data Science]</span><br>
+      - <strong>Alert Fatigue Triage Engine</strong> (1st Place Winner — GDG Cricketthon Hackathon 2026)<br>
+      - <strong>Knowledge Hub & RAG Engine</strong> (Two-Stage Qdrant & Celery Pipeline)<br>
+      - <strong>NEAT Flappy Bird</strong> (Autonomous Neuroevolution Reinforcement Agent)<br>
+      <span class="cmd-highlight">[Cloud & DevOps]</span><br>
+      - <strong>AWS Student Kill Switch</strong> (Serverless FinOps via Lambda/SQS/SNS)<br>
+      Type <span class="cmd-highlight">projects</span> or use filters on the page to view details.`,
+    skills: () => `Technical Skills Overview:<br>
+      - <strong>AI & Data Science</strong>: PyTorch, TensorFlow, LangChain, RAG, Qdrant, Transformers, OpenCV, MediaPipe, NEAT<br>
+      - <strong>Backend & APIs</strong>    : Node.js, FastAPI, Flask, Celery, Redis, PostgreSQL, MongoDB Atlas, WebSockets, SSE<br>
+      - <strong>Frontend & Mobile</strong> : React.js, React Native, Redux, Expo, Three.js, Vite, WebGL<br>
+      - <strong>DevOps & Cloud</strong>    : Docker, Compose, AWS (Lambda, SQS, SNS, EC2), GCP Cloud Build, Nginx, CI/CD<br>
+      - <strong>Languages</strong>         : Python, C++, C, JavaScript (ES6+), TypeScript, Java, Dart, C#, SQL, PHP`,
+    awards: () => `Achievements & Leadership:<br>
+      - <strong style="color: var(--accent-gold);">1st Place Winner</strong>: Cricketthon Hackathon, GDG Nashik (Aug 2026)<br>
+      - <strong>Cloud Lead</strong>: Google Developer Groups (GDG) on Campus at MET (2024–25)<br>
+      - <strong>3rd Place</strong>: HackFusion Hackathon (2025)<br>
+      - <strong>Flutter Co-Lead</strong>: GDG on Campus Flutter Wing (2024–25)<br>
+      - <strong>Open Source</strong>: Hacktoberfest 2024 Contributor`,
     github: () => {
       setTimeout(() => window.open('https://github.com/Toshalzambare', '_blank'), 500);
       return `<span class="success-msg"><i class="fa-solid fa-square-arrow-up-right"></i> Launching GitHub profile in new tab...</span>`;
@@ -298,7 +311,8 @@ function initApp() {
     contact: () => `Connect details:<br>
       - Email: toshalzambare1@gmail.com<br>
       - Phone: +91-7666853995<br>
-      - Location: Nashik, Maharashtra, India`,
+      - Location: Nashik, Maharashtra, India<br>
+      - Website: https://toshal.space`,
     clear: null
   };
 
@@ -1027,80 +1041,209 @@ function initApp() {
   const projectsData = [
     {
       id: 'xerox-saas',
-      category: 'devops-cloud',
-      title: 'XeroxSaaS — Cloud-Native GitOps Platform',
-      tagline: 'Automated CI/CD engine deployed via ArgoCD with zero-downtime rolling rollouts.',
+      category: 'fullstack-sde',
+      title: 'XeroxSaaS — AI Document Processing SaaS',
+      tagline: 'Production full-stack SaaS with automated PDF normalization, smart page counting & real-time analytics.',
       year: '2026',
-      iconClass: 'fa-solid fa-cloud-arrow-up',
-      tech: ['Kubernetes (KinD)', 'ArgoCD', 'GitHub Actions', 'NGINX', 'Prometheus', 'Grafana'],
+      iconClass: 'fa-solid fa-file-invoice',
+      badge: 'Production Live',
+      tech: ['React.js', 'Node.js', 'Express.js', 'MongoDB Atlas', 'Socket.io', 'Backblaze B2', 'Docker'],
       details: {
-        description: 'XeroxSaaS was engineered as a robust Cloud-Native GitOps platform. Constructing an automated CI/CD engine via GitHub Actions for multi-tier apps, the system builds Docker images and pushes snapshots to Docker Hub. The GitOps architecture uses ArgoCD to sync state to local Kubernetes clusters, eliminating configuration drifts and ensuring zero-downtime rollouts. NGINX Ingress routes the traffic, and Horizontal Pod Autoscaling (HPA) scales deployments dynamically. Prometheus, Grafana, and Loki are integrated to monitor health and visualize real-time cluster metrics.',
+        description: 'Engineered and shipped XeroxSaaS — a production full-stack SaaS platform featuring multi-format document uploads, automated PDF normalization, and smart page counting with automatic color detection. Built real-time order tracking, dynamic status notifications, and shop dashboard analytics using Socket.io WebSockets. Integrated cloud object storage (Backblaze B2) with automated file cleanup pipelines. Deployed live in active production use.',
         features: [
-          'Automated CI/CD pipeline using GitHub Actions to build and push Docker images.',
-          'Deployed GitOps architecture via ArgoCD to sync Kubernetes cluster states securely.',
-          'Configured NGINX Ingress traffic routing and Horizontal Pod Autoscaling (HPA).',
-          'Monitored infrastructure health using Prometheus, Grafana, and Loki.',
-          'Live project URL: https://anti-print.vercel.app/'
+          'Full-stack SaaS with multi-format document uploads and automated normalization.',
+          'Smart page counting engine with automated color & duplex detection.',
+          'Real-time order tracking, dynamic status notifications, and shop analytics via Socket.io.',
+          'Integrated Backblaze B2 object storage with automated data retention and cleanup pipelines.',
+          'Containerized with Docker and deployed live in production.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: 'https://anti-print.vercel.app/'
       }
     },
     {
-      id: 'rag-hub',
+      id: 'alert-fatigue-triage',
       category: 'ai-ml',
-      title: 'Knowledge Hub & RAG Engine',
-      tagline: 'Scalable multi-modal retrieval engine featuring dense vector databases and reranking layers.',
+      title: 'Alert Fatigue Triage Engine',
+      tagline: '1st Place Winner: LLM-agent security triage system with MCP server and real-time visualization.',
       year: '2026',
-      iconClass: 'fa-solid fa-brain',
-      tech: ['FastAPI', 'Qdrant', 'Celery', 'PostgreSQL', 'LangChain', 'OpenCV', 'LLMs'],
+      iconClass: 'fa-solid fa-shield-halved',
+      badge: '🏆 1st Place Winner',
+      tech: ['Python', 'FastAPI', 'React.js', 'PostgreSQL', 'Docker', 'MCP Server', 'LLM Agents'],
       details: {
-        description: 'Architected an event-driven, containerized backend integrating OAuth APIs to perform automated delta-syncs across Google Drive, OneDrive, and Gmail. Engineered an asynchronous, multimodal data ingestion pipeline using horizontally scaled Celery workers to extract and process PDF, XLSX, and MP4 files via LangChain and Whisper. The system utilizes a highly accurate Two-Stage RAG search engine generating 384D vector embeddings via SentenceTransformers, indexed in Qdrant, with a Cross-Encoder for strict semantic reranking.',
+        description: 'Built an intelligent security alert triage system that uses LLM-powered autonomous agents to classify, prioritize, and auto-remediate security alerts, drastically mitigating alert fatigue. Developed a React.js dashboard for real-time alert visualization and a FastAPI backend with PostgreSQL persistence. Implemented an MCP (Model Context Protocol) server to expose alert data to AI agents for autonomous decision-making. Awarded 1st Place at the GDG Nashik Cricketthon Hackathon 2026.',
         features: [
-          'Implemented parallel media processing queues using FastAPI, Celery, and Redis brokers.',
-          'Designed Two-Stage RAG with Qdrant vector database and Cross-Encoder reranking.',
-          'Implemented an LLM Factory Pattern supporting OpenAI, Anthropic, and Ollama with Server-Sent Events (SSE).',
-          'This project is now live and actively used locally by AI Leela in production.'
+          'Awarded 1st Place at the Google Developer Groups (GDG) Nashik Cricketthon Hackathon 2026.',
+          'Autonomous LLM-powered triage agents for real-time alert classification and remediation.',
+          'Implemented Model Context Protocol (MCP) server enabling AI agents to query & resolve incidents.',
+          'React.js visual telemetry dashboard with sub-second FastAPI backend persistence.',
+          'Containerized deployment using Docker.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
       }
     },
     {
-      id: 'aws-finops',
-      category: 'devops-cloud',
-      title: 'AWS FinOps Bot & Kill-Switch',
-      tagline: 'Fault-tolerant auto-termination queue intercepting budget breaches.',
+      id: 'rag-hub',
+      category: 'ai-ml',
+      title: 'Data Ingestion & RAG Platform',
+      tagline: 'Enterprise data ingestion with multi-provider OAuth sync, Celery queues & Qdrant vector search.',
       year: '2025',
-      iconClass: 'fa-brands fa-aws',
-      tech: ['AWS Budgets', 'Amazon SNS', 'Amazon SQS', 'AWS Lambda', 'EC2', 'RDS'],
+      iconClass: 'fa-solid fa-brain',
+      badge: 'Production Used',
+      tech: ['FastAPI', 'React', 'Redux', 'PostgreSQL', 'Redis', 'Celery', 'MinIO', 'Qdrant', 'Docker'],
       details: {
-        description: 'Designed an event-driven FinOps auto-termination pipeline that intercepts budget breaches via AWS Budgets and flags them to consumer queues using Amazon SNS. Engineered a worker queue model using Amazon SQS with Visibility Timeouts, triggering localized cleanups via agents executing automated scripts. Established a Dead-Letter Queue (DLQ) topology routing unprocessed payloads to AWS Lambda to automatically stop expensive rogue services like EC2, RDS, and EKS clusters.',
+        description: 'Architected an enterprise-grade data ingestion platform with OAuth 2.0 integration for Google Drive and OneDrive, enabling automated multi-provider file sync. Engineered an async ingestion pipeline with horizontally scaled Celery workers processing multi-format files (PDF, DOCX, XLSX, images) with OCR extraction. Implemented a Two-Stage RAG chat interface backed by Qdrant vector database, SentenceTransformers, and Cross-Encoder reranking. Orchestrated 7+ Docker microservices via Docker Compose. Actively used in production at AI Leela.',
         features: [
-          'Designed event-driven FinOps auto-termination pipeline via AWS Budgets and Amazon SNS.',
-          'Engineered a resilient worker queue model using Amazon SQS with Visibility Timeouts.',
-          'Established Dead-Letter Queue (DLQ) topologies to gracefully handle unprocessed payloads.',
-          'Triggered AWS Lambda functions to automatically shut down costly services like EC2, RDS, and EKS.'
+          'Automated multi-provider delta sync for Google Drive and OneDrive via OAuth 2.0.',
+          'High-throughput Celery worker ingestion pipeline extracting multimodal text and OCR.',
+          'Two-Stage RAG search engine with Qdrant vector database and Cross-Encoder reranking.',
+          'Server-Sent Events (SSE) streaming low-latency AI responses to a React/Redux frontend.',
+          'Orchestrated 7+ Docker containers (backend, frontend, workers, Redis, Postgres, MinIO, Nginx).'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
+      }
+    },
+    {
+      id: 'scribble-game',
+      category: 'fullstack-sde',
+      title: 'Scribble — Multiplayer Drawing Game',
+      tagline: 'Containerized real-time multiplayer drawing & guessing game broadcasting canvas events via WebSockets.',
+      year: '2026',
+      iconClass: 'fa-solid fa-paintbrush',
+      badge: 'Multiplayer Web',
+      tech: ['Node.js', 'Express.js', 'Socket.io', 'HTML5 Canvas', 'Docker', 'Docker Compose'],
+      details: {
+        description: 'Architected a low-latency, real-time multiplayer drawing game broadcasting canvas events to concurrent clients via WebSocket rooms. Developed room management, turn-based game state synchronization, word selection, scoring engine, and automated chat-based guess validation. Containerized client and server microservices using Docker and orchestrated multi-container deployment with Docker Compose.',
+        features: [
+          'Low-latency canvas drawing event broadcasting to concurrent clients in WebSocket rooms.',
+          'Turn-based game state synchronization, custom word generator, and scoring engine.',
+          'Automated chat guess evaluation with fuzzy matching and dynamic turn management.',
+          'Microservices architecture containerized with Docker and Docker Compose.'
+        ],
+        link: 'https://github.com/Toshalzambare',
+        liveUrl: null
+      }
+    },
+    {
+      id: 'docview-app',
+      category: 'fullstack-sde',
+      title: 'Docview — Mobile Document Viewer',
+      tagline: 'Cross-platform mobile document viewer with custom Android Native Intent module.',
+      year: '2026',
+      iconClass: 'fa-solid fa-mobile-screen',
+      badge: 'Mobile App',
+      tech: ['React Native', 'Expo', 'JavaScript', 'Custom Android Native Module'],
+      details: {
+        description: 'Developed a cross-platform mobile document viewer supporting file system navigation, search, and deep linking via custom intent handling. Built a custom Android Native Intent module (withIntentDataModule) to intercept system file-open requests and render documents with optimized memory handling.',
+        features: [
+          'Cross-platform file system explorer with instant search and document previews.',
+          'Custom Android Native Intent module (withIntentDataModule) to handle external open-file intents.',
+          'Deep linking and high-performance memory-optimized document rendering.'
+        ],
+        link: 'https://github.com/Toshalzambare',
+        liveUrl: null
+      }
+    },
+    {
+      id: 'portfolio-3d',
+      category: 'fullstack-sde',
+      title: 'Interactive 3D Portfolio & Admin Shell',
+      tagline: 'WebGL 3D particle scene, interactive terminal emulator, and AES-256 encrypted admin storage.',
+      year: '2026',
+      iconClass: 'fa-solid fa-cube',
+      badge: 'Live Site',
+      tech: ['JavaScript', 'Three.js', 'Vite', 'Node.js', 'Express.js', 'Vercel'],
+      details: {
+        description: 'Built an interactive portfolio website featuring WebGL-powered 3D particle scenes, animated particle fields, and smooth scroll-driven transitions. Implemented a functional terminal emulator with custom commands, an encrypted file manager with JWT authentication, and Vercel serverless functions. Live at toshal.space.',
+        features: [
+          'Interactive WebGL 3D particle canvas with gravitational physics and parallax camera.',
+          'Functional terminal shell emulator with custom commands, fullscreen mode, and secret admin access.',
+          'Secure AES-256-GCM encrypted file storage and authenticated in-browser previewer.',
+          'Modern glassmorphism interface with GSAP scroll animations.'
+        ],
+        link: 'https://github.com/Toshalzambare',
+        liveUrl: 'https://toshal.space'
       }
     },
     {
       id: 'neat-flappy',
       category: 'ai-ml',
-      title: 'AI NeuroEvolution Agent',
-      tagline: 'Reinforcement-learning environment teaching neural networks to play Flappy Bird via NEAT.',
-      year: '2025',
+      title: 'NEAT Neuroevolution AI Game',
+      tagline: 'Reinforcement learning neural networks autonomously playing Flappy Bird with infinite fitness.',
+      year: '2026',
       iconClass: 'fa-solid fa-network-wired',
-      tech: ['Python', 'Pygame', 'NEAT Algorithm', 'Neural Networks', 'Matplotlib'],
+      badge: 'AI Evolution',
+      tech: ['Python', 'NEAT-Python', 'Pygame', 'Plotly'],
       details: {
-        description: 'Engineered a reinforcement-learning environment where neural networks learn to autonomously play a game using the NEAT (NeuroEvolution of Augmenting Topologies) algorithm. Developed a real-time, dual-mode visualization dashboard in Pygame to monitor live network topology evolution and generation-over-generation mutations. Implemented dynamic difficulty scaling forcing agents to adapt to moving obstacles.',
+        description: 'Implemented a Flappy Bird simulation with AI agents trained using the NEAT (NeuroEvolution of Augmenting Topologies) algorithm. Built a Plotly-based analytics dashboard visualizing genome fitness evolution, species diversity, and neural network topology across generations. Achieved perfect gameplay (infinite score) within 5–10 generations using feedforward neural networks with 3 inputs and 1 output.',
         features: [
-          'Engineered reinforcement-learning agents using NEAT to autonomously play the game.',
-          'Developed a real-time visualization dashboard in Pygame to monitor network topology.',
-          'Implemented dynamic difficulty scaling and pixel-perfect collision detection.',
-          'Built a custom mutation-tracking engine translating node adjustments into human-readable logs.'
+          'Autonomous neuroevolution agent using NEAT genetic algorithm.',
+          'Plotly analytics dashboard tracking genome fitness, species niches, and topology evolution.',
+          'Achieved flawless infinite gameplay within 5–10 generations.',
+          'Dual-mode real-time visualizer built in Pygame.'
+        ],
+        link: 'https://github.com/Toshalzambare',
+        liveUrl: null
+      }
+    },
+    {
+      id: 'aws-kill-switch',
+      category: 'cloud-devops',
+      title: 'AWS Student Kill Switch',
+      tagline: 'Serverless FinOps cost-protection system intercepting runaway cloud resources.',
+      year: '2026',
+      iconClass: 'fa-brands fa-aws',
+      badge: 'Cloud FinOps',
+      tech: ['Python', 'AWS Lambda', 'SQS', 'SNS', 'IAM', 'CloudWatch', 'Boto3'],
+      details: {
+        description: 'Built a serverless AWS cost-protection system using Lambda + SQS + SNS event-driven architecture to automatically detect and terminate runaway resources. Implemented IAM least-privilege policies, CloudWatch billing alarms, and automated EC2/RDS instance shutdown workflows. Included a local Python worker fallback for environments without Lambda access.',
+        features: [
+          'Event-driven FinOps auto-termination pipeline via CloudWatch billing alarms and Amazon SNS.',
+          'Worker queue model using Amazon SQS with Visibility Timeouts and Dead-Letter Queue (DLQ).',
+          'Automated shutdown scripts terminating expensive EC2 and RDS instances on breach.',
+          'Local Python worker fallback and full CLI setup/teardown guide.'
+        ],
+        link: 'https://github.com/Toshalzambare',
+        liveUrl: null
+      }
+    },
+    {
+      id: 'handsign-recognition',
+      category: 'ai-ml',
+      title: 'Real-Time ASL Handsign Recognition',
+      tagline: 'Computer vision pipeline recognizing ASL letters at 30+ FPS via MediaPipe landmark extraction.',
+      year: '2025',
+      iconClass: 'fa-solid fa-hand',
+      badge: 'Computer Vision',
+      tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'scikit-learn'],
+      details: {
+        description: 'Built a real-time hand sign language detection system recognizing ASL letters (A, B, C) using webcam feed. Used MediaPipe Hands for 21-point landmark extraction and trained a classification model on custom gesture datasets. Achieved real-time inference at 30+ FPS with bounding box visualization and confidence scoring.',
+        features: [
+          '21-point hand landmark extraction using Google MediaPipe Hands.',
+          'Trained gesture classification model on custom ASL gesture datasets.',
+          'Sub-30ms real-time inference (30+ FPS) with dynamic bounding boxes and confidence score overlay.'
+        ],
+        link: 'https://github.com/Toshalzambare',
+        liveUrl: null
+      }
+    },
+    {
+      id: 'digit-recognition',
+      category: 'ai-ml',
+      title: 'Handwritten Digit Recognition',
+      tagline: 'Deep neural network classifier achieving 98%+ accuracy on MNIST dataset.',
+      year: '2025',
+      iconClass: 'fa-solid fa-calculator',
+      badge: 'Deep Learning',
+      tech: ['Python', 'TensorFlow', 'Keras', 'NumPy', 'Jupyter Notebook'],
+      details: {
+        description: 'Built and trained a deep neural network for MNIST handwritten digit classification achieving 98%+ accuracy. Implemented data preprocessing, model architecture design, training loops, and evaluation with confusion matrices.',
+        features: [
+          'Deep neural network reaching 98%+ test accuracy on MNIST handwritten digits.',
+          'Complete pipeline with image normalization, one-hot encoding, and data augmentation.',
+          'Comprehensive evaluation using confusion matrices, precision, recall, and F1-score metrics.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
@@ -1109,56 +1252,58 @@ function initApp() {
     {
       id: 'agent-3d',
       category: 'ai-ml',
-      title: 'Voice-Interactive AI NPC',
-      tagline: 'End-to-end voice-driven AI communication system for Unity 3D clients.',
+      title: 'AI Voice/Text NPC Game System',
+      tagline: 'Unity 3D game client communicating with AI NPCs via offline STT/TTS and LLM dialogues.',
       year: '2025',
       iconClass: 'fa-solid fa-headset',
-      tech: ['Unity', 'C#', 'Gemini API', 'Flask', 'Vosk (STT)', 'pyttsx3 (TTS)'],
+      badge: 'Game AI & LLMs',
+      tech: ['Unity3D', 'C#', 'Python', 'Flask', 'WebSocket', 'LLM API'],
       details: {
-        description: 'Architected an end-to-end voice-driven AI communication system integrating a Unity 3D client with a custom Python microservice (Flask REST API) for real-time, bidirectional, zero-blocking NPC conversations. Implemented offline Speech-to-Text (Vosk) and Text-to-Speech (pyttsx3) pipelines with a thread-safe multiprocessing architecture, achieving sub-second latency without paid cloud APIs. Integrated Google Gemini API to dynamically generate context-aware dialogue.',
+        description: 'Developed a Unity game where players communicate with AI-powered NPCs via voice and text in natural language. Built a Python Flask server handling speech-to-text, LLM-based dialogue generation, and text-to-speech synthesis for immersive NPC conversations. Implemented WebSocket communication between Unity client and Python AI server for low-latency real-time interactions.',
         features: [
-          'Architected zero-blocking bidirectional voice-driven AI conversations for Unity NPCs.',
-          'Implemented offline STT (Vosk) and TTS (pyttsx3) using thread-safe multiprocessing architectures.',
-          'Achieved sub-second response latency entirely without expensive cloud speech APIs.',
-          'Integrated Google Gemini API for dynamic, context-aware character dialogue.'
+          'Bidirectional real-time voice and text conversations with Unity 3D NPCs.',
+          'Thread-safe multiprocessing Flask backend for STT, LLM inference, and TTS generation.',
+          'Low-latency WebSocket streaming for instant dialogue feedback.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
       }
     },
     {
-      id: 'healthcare-platform',
-      category: 'other',
-      title: 'Healthcare Optimization Platform',
-      tagline: 'Cross-platform app tracking bed occupancy, queues, and clinical admission records.',
-      year: '2024',
-      iconClass: 'fa-solid fa-hospital',
-      tech: ['React Native', 'Node.js', 'AI Predictions', 'FHIR / HL7 Standards'],
+      id: 'gcp-cicd',
+      category: 'cloud-devops',
+      title: 'Google Cloud CI/CD Pipeline',
+      tagline: 'Automated continuous integration and deployment with Google Cloud Build & Cloud Run.',
+      year: '2025',
+      iconClass: 'fa-brands fa-google',
+      badge: 'CI/CD Cloud',
+      tech: ['Python', 'Google Cloud Build', 'Cloud Run', 'Docker', 'GitHub'],
       details: {
-        description: 'A hospital management and resource optimization platform designed to resolve bottlenecks in regional clinic admissions, emergency room queues, and bed allocation charts. Using cross-platform technologies (React Native) for patient-facing access and robust backend algorithms, the system estimates ER wait times based on historical queue patterns, tracks real-time bed occupancy, and schedules routine rounds.',
+        description: 'Configured continuous integration and deployment pipelines using Google Cloud Build with automated Docker image builds and Cloud Run deployments triggered by GitHub push events.',
         features: [
-          'Constructed robust cross-platform interfaces to coordinate patient registration and priority queues.',
-          'Used AI-driven regression algorithms for wait-time predictions and resource requirements.',
-          'Integrated FHIR/HL7 messaging schemas to support standard clinical record formats.'
+          'Automated Docker image packaging triggered by GitHub push events.',
+          'Serverless deployment to Google Cloud Run with secret management and traffic splitting.',
+          'Automated rollbacks and health monitoring.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
       }
     },
     {
-      id: 'brick-breaker',
-      category: 'other',
-      title: 'Brick Breaker Game (OpenGL)',
-      tagline: 'Retro C++ arcade game written from scratch utilizing OpenGL rendering pipelines.',
-      year: '2024',
-      iconClass: 'fa-solid fa-gamepad',
-      tech: ['C++', 'OpenGL', 'GLUT Libraries', 'Physics Loops'],
+      id: 'snake-ladders',
+      category: 'iot-games',
+      title: 'Snake & Ladders (Graph BFS/DFS)',
+      tagline: 'Multiplayer Pygame board game utilizing graph data structures and BFS probability solver.',
+      year: '2025',
+      iconClass: 'fa-solid fa-dice',
+      badge: 'Graph Algorithms',
+      tech: ['Python', 'Pygame', 'Graph Theory', 'BFS/DFS'],
       details: {
-        description: 'A detailed reconstruction of arcade mechanics demonstrating structured object-oriented programming, custom rendering loops, and vector math. Wrote fully customized elastic collision math handling paddle angles, side-walls, and brick destructions.',
+        description: 'Developed a multiplayer Snake & Ladders game with a graphical UI using Pygame, featuring animated dice rolls and token movement. Implemented the game board as a graph data structure and used BFS to compute optimal move sequences and win probability analysis.',
         features: [
-          'Wrote fully customized elastic collision math handling paddle angles, side-walls, and brick destructions.',
-          'Rendered textures, scores, and particles using classic OpenGL / GLUT methods.',
-          'Implemented object-oriented logic modules dividing board layouts, paddle controls, ball dynamics, and UI screens.'
+          'Modeled board states as directed graphs with BFS/DFS optimal route computations.',
+          'Win probability analysis engine and shortest-path prediction.',
+          'Smooth graphical animations for dice rolls and player tokens in Pygame.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
@@ -1166,37 +1311,39 @@ function initApp() {
     },
     {
       id: 'home-automation',
-      category: 'other',
-      title: 'ESP8266 IoT Home Automation',
-      tagline: 'Bidirectional smart home controllers utilizing MQTT feeds and cloud dashboard panels.',
-      year: '2024',
-      iconClass: 'fa-solid fa-house-laptop',
-      tech: ['ESP8266 Board', 'Arduino IoT', 'MQTT Protocol', 'Relay Circuits'],
+      category: 'iot-games',
+      title: 'IoT Home Automation System',
+      tagline: 'ESP32 microcontroller system controlling appliances via relay circuits and Blynk IoT.',
+      year: '2025',
+      iconClass: 'fa-solid fa-house-signal',
+      badge: 'IoT & Hardware',
+      tech: ['Arduino', 'C++', 'ESP32 / NodeMCU', 'Relay Modules', 'Blynk IoT'],
       details: {
-        description: 'A home automation system connecting consumer home appliances directly to secure remote dashboards. The core architecture uses ESP8266 microchips communicating state payloads over low-bandwidth MQTT queues.',
+        description: 'Designed a smart home automation system using microcontrollers (Arduino/ESP32) controlling lights and fans via relay circuits. Implemented remote control via the Blynk IoT mobile app with Wi-Fi connectivity for real-time appliance switching.',
         features: [
-          'Programmed microcontrollers to handle appliance states using ESP8266 WiFi modules.',
-          'Wrote MQTT data channels for low-latency web sockets communicating device states in real-time.',
-          'Constructed safety-compliant physical relay circuits driving LED bulbs and fan regulators.'
+          'Wi-Fi-enabled hardware control using ESP32 and Blynk IoT cloud platform.',
+          'Optoisolated physical relay modules controlling high-voltage home appliances.',
+          'Real-time bidirectional state telemetry and fail-safe operation.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
       }
     },
     {
-      id: 'hand-sign-recognition',
-      category: 'other',
-      title: 'Hand Sign CNN Recognizer',
-      tagline: 'Webcam-driven computer vision system classifying gesture signals in real-time.',
-      year: '2024',
-      iconClass: 'fa-solid fa-hand',
-      tech: ['Python', 'TensorFlow', 'Keras', 'OpenCV'],
+      id: 'iot-dashboard',
+      category: 'iot-games',
+      title: 'IoT Environmental Monitoring',
+      tagline: 'Live telemetry web dashboard monitoring environmental sensors streamed from ESP32.',
+      year: '2025',
+      iconClass: 'fa-solid fa-temperature-half',
+      badge: 'IoT Telemetry',
+      tech: ['Python', 'Flask', 'HTML/CSS/JS', 'ESP32', 'Sensors'],
       details: {
-        description: 'A computer vision framework that leverages custom convolutional neural networks (CNNs) to translate hand sign vocabulary into text characters. Trained using TensorFlow and Keras.',
+        description: 'Built a web-based dashboard for real-time environmental monitoring (temperature, humidity, air quality) with data streamed from ESP32 sensors.',
         features: [
-          'Structured and trained custom Convolutional Neural Networks (CNNs) using TensorFlow and Keras.',
-          'Incorporated OpenCV pipelines to isolate hands, compute thresholds, and feed frames to inferences.',
-          'Applied image augmentation (rotations, flips, zoom scaling) to bolster dataset generalization.'
+          'Live data streaming from ESP32 edge sensor hardware.',
+          'Real-time web dashboard with charts, historical trends, and alert threshold notifications.',
+          'Lightweight Flask backend with RESTful telemetry endpoints.'
         ],
         link: 'https://github.com/Toshalzambare',
         liveUrl: null
@@ -1226,6 +1373,11 @@ function initApp() {
       
       const techTags = project.tech.map(t => `<span>${t}</span>`).join('');
       
+      let badgeHtml = '';
+      if (project.badge) {
+        badgeHtml = `<span class="project-badge-pill ${project.badge.includes('1st') ? 'winner' : ''}">${project.badge}</span>`;
+      }
+
       let liveDemoBtnHtml = '';
       if (project.details.liveUrl) {
         liveDemoBtnHtml = `
@@ -1240,6 +1392,7 @@ function initApp() {
           <div class="project-card-inner">
             <div class="project-image-placeholder">
               <div class="project-glow"></div>
+              ${badgeHtml}
               <img src="/project-images/${project.id}.jpg" alt="${project.title}" class="project-image" onerror="if(this.src.endsWith('.jpg')){this.src=this.src.replace('.jpg','.png');}else if(this.src.endsWith('.png')){this.src=this.src.replace('.png','.jpeg');}else if(this.src.endsWith('.jpeg')){this.src=this.src.replace('.jpeg','.webp');}else{this.style.display='none';}">
               <i class="${project.iconClass} project-large-icon" style="position: absolute; z-index: 0;"></i>
               <span class="project-year">${project.year}</span>
@@ -1274,7 +1427,7 @@ function initApp() {
     // Trigger entering scale/opacity GSAP animations
     gsap.fromTo('#projects-grid .project-card-wrapper', 
       { opacity: 0, scale: 0.9, y: 30 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out', overwrite: 'auto' }
+      { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.08, ease: 'power2.out', overwrite: 'auto' }
     );
   }
 
@@ -1327,15 +1480,25 @@ function initApp() {
           </a>
         `;
       }
+
+      const modalTechTags = project.tech.map(t => `<span class="skill-tag">${t}</span>`).join('');
+      let badgeBanner = '';
+      if (project.badge) {
+        badgeBanner = `<div class="modal-badge-pill ${project.badge.includes('1st') ? 'winner' : ''}">${project.badge}</div>`;
+      }
       
       modalBody.innerHTML = `
+        ${badgeBanner}
         <h3 class="modal-project-title">${project.title}</h3>
-        <span class="modal-project-year">${project.year} | Featured Stack</span>
+        <span class="modal-project-year">${project.year} | Featured Architecture</span>
+        <div class="modal-tech-row" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0 1.25rem;">
+          ${modalTechTags}
+        </div>
         <p class="modal-project-desc">${project.details.description}</p>
         
-        <h4 class="modal-section-title">Key Implementations</h4>
+        <h4 class="modal-section-title">Key Implementations & Architecture</h4>
         <ul class="modal-features-list">
-          ${project.details.features.map(f => `<li>${f}</li>`).join('')}
+          ${project.details.features.map(f => `<li><i class="fa-solid fa-angle-right" style="color: var(--accent-gold); margin-right: 0.5rem;"></i>${f}</li>`).join('')}
         </ul>
         
         <div class="modal-links-container">

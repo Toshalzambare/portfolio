@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Toshal Narendra Zambare - Interactive 3D Portfolio. AI & Data Science Engineer, Full-Stack Developer, ML Engineer, and DevOps Engineer.">
-  <meta name="keywords" content="Toshal Zambare, AI Engineer, Data Science, Full-Stack Developer, ML Engineer, Portfolio, Three.js">
+  <meta name="description"
+    content="Toshal Narendra Zambare - Interactive 3D Portfolio. AI & Data Science Engineer, Full-Stack Developer, ML Engineer, and DevOps Engineer.">
+  <meta name="keywords"
+    content="Toshal Zambare, AI Engineer, Data Science, Full-Stack Developer, ML Engineer, Portfolio, Three.js">
   <meta name="author" content="Toshal Narendra Zambare">
   <title>Toshal Narendra Zambare | AI & Data Science Engineer | Portfolio</title>
-  
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- FontAwesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
   <!-- WebGL Background Canvas -->
   <canvas id="webgl-bg"></canvas>
@@ -49,7 +55,8 @@
       <div class="container hero-container">
         <div class="hero-content">
           <div class="badge-container">
-            <span class="badge">Open for Opportunities</span>
+            <span class="badge"><i class="fa-solid fa-bolt"
+                style="margin-right: 0.4rem; color: var(--accent-gold);"></i>Open for Opportunities</span>
           </div>
           <h1 class="hero-title glitch-hover" data-text="Toshal Zambare">
             Hi, I'm <span class="name-gradient">Toshal Zambare</span>
@@ -59,21 +66,25 @@
             <span class="cursor">|</span>
           </div>
           <p class="hero-description">
-            B.E. student in AI & Data Science with proven experience shipping production AI/ML systems, RAG pipelines, and full-stack SaaS products. Passionate about bridging the gap between intelligent algorithms and beautiful, high-performing user interfaces.
+            Versatile B.E. student in Artificial Intelligence & Data Science with hands-on experience building
+            production-grade AI/ML systems, full-stack SaaS platforms, cloud-native architectures, and IoT solutions.
+            Cloud Lead at Google Developer Groups (GDG) on Campus at MET.
           </p>
           <div class="hero-actions">
             <a href="#projects" class="btn btn-primary magnetic">
               <span>View Projects</span> <i class="fa-solid fa-arrow-right"></i>
             </a>
-            <button id="btn-resume-preview" class="btn btn-secondary magnetic">Preview Resume</button>
-            <a href="#contact" class="btn btn-secondary magnetic">Get In Touch</a>
+            <button id="btn-resume-preview" class="btn btn-secondary magnetic"><i class="fa-solid fa-file-lines"></i>
+              Resumes & CV</button>
+            <a href="/CV.pdf" download="Toshal_Zambare_CV.pdf" class="btn btn-secondary magnetic"><i
+                class="fa-solid fa-download"></i> Download CV</a>
           </div>
         </div>
         <div class="hero-visual">
           <div class="terminal-helper-text">
             <span class="pulse-dot"></span>
             <i class="fa-solid fa-keyboard pulse-icon"></i>
-            <span>Interactive Terminal — Try typing in it!</span>
+            <span>Interactive Terminal — Try typing commands!</span>
           </div>
           <!-- Interactive Terminal Card -->
           <div class="hero-glass-card terminal-card" id="hero-card">
@@ -90,11 +101,13 @@
             </div>
             <div class="card-body terminal-body" id="terminal-body">
               <div class="terminal-output" id="terminal-output">
-                <p class="terminal-line system-msg">Welcome to Toshal's interactive shell. Type <span class="cmd-highlight">help</span> to list commands.</p>
+                <p class="terminal-line system-msg">Welcome to Toshal's interactive shell. Type <span
+                    class="cmd-highlight">help</span> to list commands.</p>
               </div>
               <div class="terminal-input-line">
                 <span class="terminal-prompt" id="terminal-prompt-label">guest@portfolio:~$</span>
-                <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="type a command..." aria-label="Terminal input">
+                <input type="text" id="terminal-input" autocomplete="off" spellcheck="false"
+                  placeholder="type a command..." aria-label="Terminal input">
                 <input type="file" id="terminal-file-input" style="display: none;" multiple>
                 <input type="file" id="terminal-resume-input" style="display: none;" accept=".pdf">
               </div>
@@ -127,13 +140,20 @@
         <div class="about-grid">
           <div class="about-text-content">
             <p class="lead-text">
-              I specialize in creating robust artificial intelligence systems and combining them with full-stack capabilities. 
+              Versatile B.E. student in Artificial Intelligence & Data Science with hands-on experience building
+              production-grade AI/ML systems, full-stack SaaS platforms, cloud-native architectures, and IoT solutions.
             </p>
             <p>
-              Currently pursuing my B.E. in Artificial Intelligence & Data Science at Savitribai Phule Pune University (Expected 2027), I maintain a strong academic record with a **CGPA of 8.7/10**. I actively apply theoretical foundations to industry problems, as demonstrated by my experience building production SaaS platforms and production AI pipelines.
+              Currently pursuing my B.E. in Artificial Intelligence & Data Science at Savitribai Phule Pune University
+              (SPPU) — MET Institute of Engineering, Nashik (Expected 2027) with a <strong>CGPA of 8.7 / 10.0</strong>.
+              Strong foundation in Data Structures & Algorithms, microservices design, real-time systems, and
+              containerized deployments.
             </p>
             <p>
-              As the **Google Developer Groups Campus Lead**, I guide community workshops, mentor developer peers, and contribute actively to open-source systems. My leadership extends to hackathons, where my teams have secured multiple awards.
+              Serving as the <strong>Cloud Lead at Google Developer Groups (GDG) on Campus at MET</strong> and former
+              <strong>Flutter Co-Lead</strong>. Passionate about bridging intelligent algorithms with beautiful,
+              high-performing user interfaces, and actively contributing to hackathons (1st Place GDG Cricketthon
+              winner) and open-source ecosystems.
             </p>
             <div class="about-info-grid">
               <div class="info-item">
@@ -149,28 +169,28 @@
                 <span class="info-val">Nashik, Maharashtra, India</span>
               </div>
               <div class="info-item">
-                <span class="info-label">Role:</span>
-                <span class="info-val">AI/ML & Full-Stack</span>
+                <span class="info-label">Website:</span>
+                <span class="info-val"><a href="https://toshal.space" target="_blank">toshal.space</a></span>
               </div>
             </div>
           </div>
-          
+
           <div class="about-stats-container">
             <div class="stat-card">
               <span class="stat-num">8.7</span>
-              <span class="stat-label">B.E. CGPA</span>
+              <span class="stat-label">B.E. CGPA (SPPU)</span>
             </div>
             <div class="stat-card">
               <span class="stat-num">1st</span>
-              <span class="stat-label">GDG Cricketthon</span>
+              <span class="stat-label">GDG Cricketthon Winner</span>
             </div>
             <div class="stat-card">
-              <span class="stat-num">8+</span>
-              <span class="stat-label">GitHub Projects</span>
+              <span class="stat-num">12+</span>
+              <span class="stat-label">Production & AI Projects</span>
             </div>
             <div class="stat-card">
               <span class="stat-num">GDG</span>
-              <span class="stat-label">Campus Lead</span>
+              <span class="stat-label">Campus Cloud Lead</span>
             </div>
           </div>
         </div>
@@ -186,7 +206,7 @@
         </div>
         <div class="timeline-container">
           <div class="timeline-line"></div>
-          
+
           <div class="timeline-item">
             <div class="timeline-dot"></div>
             <div class="timeline-date">Dec 2025 – Feb 2026</div>
@@ -196,11 +216,23 @@
                 <span class="company-name">AI Leela, Nashik</span>
               </div>
               <ul class="timeline-details">
-                <li>Architected an event-driven Knowledge Hub integrating OAuth APIs for delta-syncs across G-Drive and OneDrive.</li>
-                <li>Engineered asynchronous, multimodal ingestion using Celery workers to extract PDF, XLSX, and MP4 via LangChain and Whisper.</li>
-                <li>Designed a Two-Stage RAG search engine using 384D vector embeddings (SentenceTransformers), Qdrant, and Cross-Encoder reranking.</li>
-                <li>Implemented an LLM Factory Pattern supporting OpenAI, Anthropic, and Ollama with Server-Sent Events (SSE).</li>
-                <li style="color: var(--accent-gold); margin-top: 0.5rem;"><i class="fa-solid fa-rocket" style="margin-right: 0.3rem;"></i> <strong>This project is live and actively used in production by AI Leela locally.</strong></li>
+                <li>Designed and developed <strong>XeroxSaaS</strong> — a production AI-powered SaaS platform for
+                  automated document processing using the MERN stack with real-time WebSocket notifications.</li>
+                <li>Architected a containerized microservices backend using <strong>FastAPI, PostgreSQL, and
+                    Redis</strong>, integrating OAuth 2.0 for automated multi-provider data sync (Google Drive,
+                  OneDrive).</li>
+                <li>Engineered a high-throughput asynchronous data ingestion pipeline using horizontally scaled
+                  <strong>Celery workers</strong> to extract, parse, and archive multi-format files into MinIO object
+                  storage.</li>
+                <li>Implemented <strong>Server-Sent Events (SSE)</strong> and REST endpoints to stream low-latency
+                  analytics and AI chat responses to a React/Redux frontend.</li>
+                <li>Built <strong>LangChain-based AI agents</strong> for intelligent document conversion, summarization,
+                  and page-level analysis using vector embeddings.</li>
+                <li>Containerized all microservices with <strong>Docker</strong> and deployed on Render, Vercel, and
+                  MongoDB Atlas; currently active in local production use.</li>
+                <li style="color: var(--accent-gold); margin-top: 0.5rem;"><i class="fa-solid fa-circle-check"
+                    style="margin-right: 0.3rem;"></i> <strong>Production Status: Active and deployed in local
+                    production use.</strong></li>
               </ul>
             </div>
           </div>
@@ -213,30 +245,31 @@
       <div class="container">
         <div class="section-header flex-header">
           <div>
-            <h2 class="section-title">Key Projects</h2>
+            <h2 class="section-title">Featured Projects</h2>
             <div class="section-divider"></div>
           </div>
           <!-- Project Category Filters -->
           <div class="project-filters">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="ai-ml">AI & ML</button>
-            <button class="filter-btn" data-filter="devops-cloud">DevOps & Cloud</button>
-            <button class="filter-btn" data-filter="other">Other</button>
+            <button class="filter-btn" data-filter="fullstack-sde">Full-Stack & SDE</button>
+            <button class="filter-btn" data-filter="cloud-devops">Cloud & DevOps</button>
+            <button class="filter-btn" data-filter="iot-games">IoT & Games</button>
           </div>
         </div>
         <!-- Rendered dynamically from main.js -->
         <div class="projects-grid" id="projects-grid"></div>
-        
+
         <div class="more-projects-teaser">
-          <p>Want to see all automation scripts, games, and templates?</p>
+          <p>Want to explore all repositories, simulations, and algorithms?</p>
           <a href="https://github.com/Toshalzambare" target="_blank" class="btn btn-secondary magnetic">
-            <i class="fa-brands fa-github"></i> Explore GitHub Repositories
+            <i class="fa-brands fa-github"></i> Explore GitHub Profile
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Skills Section (Moved directly below Projects) -->
+    <!-- Skills Section -->
     <section id="skills" class="section skills-section">
       <div class="container">
         <div class="section-header">
@@ -244,11 +277,11 @@
           <div class="section-divider"></div>
         </div>
         <div class="skills-grid">
-          <!-- AI & ML -->
+          <!-- AI & ML & Data Science -->
           <div class="skills-category-card">
             <div class="category-header">
               <i class="fa-solid fa-brain category-icon"></i>
-              <h3>AI & ML</h3>
+              <h3>AI & Data Science</h3>
             </div>
             <div class="skills-list">
               <span class="skill-tag">LLMs</span>
@@ -259,7 +292,47 @@
               <span class="skill-tag">HuggingFace</span>
               <span class="skill-tag">Sentence-Transformers</span>
               <span class="skill-tag">OpenCV</span>
+              <span class="skill-tag">MediaPipe</span>
+              <span class="skill-tag">NEAT (NeuroEvolution)</span>
               <span class="skill-tag">Prompt Engineering</span>
+            </div>
+          </div>
+
+          <!-- Backend & APIs -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-server category-icon"></i>
+              <h3>Backend & APIs</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Express.js</span>
+              <span class="skill-tag">FastAPI</span>
+              <span class="skill-tag">Flask</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">WebSockets (Socket.io)</span>
+              <span class="skill-tag">Server-Sent Events (SSE)</span>
+              <span class="skill-tag">Celery</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">JWT / OAuth 2.0</span>
+            </div>
+          </div>
+
+          <!-- Frontend & Cross-Platform -->
+          <div class="skills-category-card">
+            <div class="category-header">
+              <i class="fa-solid fa-layer-group category-icon"></i>
+              <h3>Frontend & Mobile</h3>
+            </div>
+            <div class="skills-list">
+              <span class="skill-tag">React.js</span>
+              <span class="skill-tag">React Native</span>
+              <span class="skill-tag">Redux</span>
+              <span class="skill-tag">Expo</span>
+              <span class="skill-tag">Three.js</span>
+              <span class="skill-tag">Vite</span>
+              <span class="skill-tag">WebGL</span>
+              <span class="skill-tag">HTML5 / CSS3</span>
             </div>
           </div>
 
@@ -270,48 +343,51 @@
               <h3>DevOps & Cloud</h3>
             </div>
             <div class="skills-list">
-              <span class="skill-tag">Kubernetes (KinD)</span>
-              <span class="skill-tag">ArgoCD / GitOps</span>
-              <span class="skill-tag">Docker / Compose</span>
-              <span class="skill-tag">AWS (EC2, Lambda, SQS, SNS)</span>
-              <span class="skill-tag">Google Cloud</span>
-              <span class="skill-tag">GitHub Actions</span>
-              <span class="skill-tag">NGINX Ingress</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Docker Compose</span>
+              <span class="skill-tag">Nginx</span>
+              <span class="skill-tag">AWS (Lambda, SQS, SNS, EC2, IAM)</span>
+              <span class="skill-tag">CloudWatch & Billing</span>
+              <span class="skill-tag">Google Cloud Build</span>
+              <span class="skill-tag">Vercel & Render</span>
+              <span class="skill-tag">GitHub Actions CI/CD</span>
             </div>
           </div>
 
-          <!-- Backend & Databases -->
+          <!-- Databases & Storage -->
           <div class="skills-category-card">
             <div class="category-header">
-              <i class="fa-solid fa-server category-icon"></i>
-              <h3>Backend & DBs</h3>
+              <i class="fa-solid fa-database category-icon"></i>
+              <h3>Databases & Storage</h3>
             </div>
             <div class="skills-list">
-              <span class="skill-tag">FastAPI</span>
-              <span class="skill-tag">Flask</span>
-              <span class="skill-tag">Celery</span>
-              <span class="skill-tag">Redis</span>
               <span class="skill-tag">PostgreSQL</span>
-              <span class="skill-tag">MinIO</span>
+              <span class="skill-tag">MongoDB Atlas</span>
+              <span class="skill-tag">MySQL</span>
               <span class="skill-tag">Qdrant (Vector DB)</span>
-              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">MinIO (S3 API)</span>
+              <span class="skill-tag">Firebase / Firestore</span>
+              <span class="skill-tag">Backblaze B2</span>
             </div>
           </div>
 
-          <!-- Languages & Tools -->
+          <!-- Languages & Core CS -->
           <div class="skills-category-card">
             <div class="category-header">
               <i class="fa-solid fa-code category-icon"></i>
-              <h3>Languages & Tools</h3>
+              <h3>Languages & Core CS</h3>
             </div>
             <div class="skills-list">
               <span class="skill-tag">Python</span>
-              <span class="skill-tag">Bash</span>
               <span class="skill-tag">C++ / C</span>
+              <span class="skill-tag">JavaScript (ES6+)</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Java</span>
               <span class="skill-tag">Dart</span>
-              <span class="skill-tag">Pandas / NumPy</span>
-              <span class="skill-tag">Git / OOP</span>
-              <span class="skill-tag">Data Structures</span>
+              <span class="skill-tag">C# / SQL / PHP</span>
+              <span class="skill-tag">Data Structures & Algorithms</span>
+              <span class="skill-tag">System Design</span>
+              <span class="skill-tag">Microservices</span>
             </div>
           </div>
         </div>
@@ -326,22 +402,25 @@
           <div class="section-divider"></div>
         </div>
         <div class="achievements-grid">
-          <div class="achievement-card glass-card">
+          <div class="achievement-card glass-card winner-card">
             <div class="achievement-icon">
               <i class="fa-solid fa-trophy"></i>
             </div>
-            <h3>1st Place — Cricketthon</h3>
-            <span class="achievement-meta">GDG Nashik, 2026</span>
-            <p>Won first place in the hackathon organized by Google Developer Group Nashik, building a production-grade application within limited hours.</p>
+            <div class="winner-badge"><i class="fa-solid fa-medal"></i> 1st Place Winner</div>
+            <h3>1st Place — Cricketthon Hackathon</h3>
+            <span class="achievement-meta">Google Developer Groups (GDG) Nashik, Aug 2026</span>
+            <p>Won first place building an intelligent Alert Fatigue Triage Engine with LLM agents, FastAPI, PostgreSQL,
+              and Model Context Protocol (MCP) server.</p>
           </div>
 
           <div class="achievement-card glass-card">
             <div class="achievement-icon">
-              <i class="fa-solid fa-users-gear"></i>
+              <i class="fa-solid fa-cloud"></i>
             </div>
-            <h3>Flutter Co-Lead</h3>
-            <span class="achievement-meta">GDGC at MET (2024–25)</span>
-            <p>Co-led the Flutter development wing of the Google Developer Groups on Campus. Conducted hands-on sessions and mentored 100+ peers in building mobile applications.</p>
+            <h3>Cloud Lead — GDG on Campus</h3>
+            <span class="achievement-meta">MET Institute of Engineering (2024 – 2025)</span>
+            <p>Led the cloud computing track, conducted technical workshops on cloud-native deployments, Docker, and
+              CI/CD pipelines, mentoring 150+ students.</p>
           </div>
 
           <div class="achievement-card glass-card">
@@ -350,16 +429,28 @@
             </div>
             <h3>3rd Place — HackFusion</h3>
             <span class="achievement-meta">HackFusion Hackathon, 2025</span>
-            <p>Awarded third place out of numerous regional teams for conceptualizing and implementing an automated software integration helper.</p>
+            <p>Awarded third place among regional engineering teams for conceptualizing and shipping an automated
+              software integration and data pipeline tool.</p>
           </div>
 
           <div class="achievement-card glass-card">
             <div class="achievement-icon">
-              <i class="fa-solid fa-cloud"></i>
+              <i class="fa-solid fa-mobile-screen-button"></i>
             </div>
-            <h3>Cloud Lead & Open Source</h3>
-            <span class="achievement-meta">GDGC at MET</span>
-            <p>Served as the cloud computing department lead. Contributed actively to multiple open-source repositories and cloud deployment tooling guides.</p>
+            <h3>Flutter Co-Lead — GDG on Campus</h3>
+            <span class="achievement-meta">MET Development Wing (2024 – 2025)</span>
+            <p>Co-led the cross-platform mobile development wing. Facilitated hands-on hack sessions and guided student
+              teams in shipping mobile applications.</p>
+          </div>
+
+          <div class="achievement-card glass-card">
+            <div class="achievement-icon">
+              <i class="fa-brands fa-github"></i>
+            </div>
+            <h3>Open-Source Contributor</h3>
+            <span class="achievement-meta">Hacktoberfest 2024</span>
+            <p>Contributed pull requests and code improvements to recognized open-source repositories across developer
+              tools, web frameworks, and algorithmic libraries.</p>
           </div>
         </div>
       </div>
@@ -375,39 +466,47 @@
         <div class="education-grid">
           <!-- Academic Education -->
           <div class="edu-card-container">
-            <h3 class="subsection-title"><i class="fa-solid fa-graduation-cap"></i> Education</h3>
+            <h3 class="subsection-title"><i class="fa-solid fa-graduation-cap"></i> Academic Education</h3>
+
             <div class="edu-card glass-card">
               <div class="edu-card-header">
                 <h4>Bachelor of Engineering (B.E.)</h4>
-                <span class="edu-gpa">CGPA 8.7/10</span>
+                <span class="edu-gpa">CGPA 8.7 / 10.0</span>
               </div>
-              <p class="edu-field">Artificial Intelligence & Data Science (Pursuing)</p>
-              <p class="edu-inst">Savitribai Phule Pune University (2019 Pattern)</p>
-              <span class="edu-timeline">Expected 2027</span>
+              <p class="edu-field">Artificial Intelligence & Data Science</p>
+              <p class="edu-inst">Savitribai Phule Pune University (SPPU) — MET Institute of Engineering, Nashik</p>
+              <span class="edu-timeline">2023 – 2027 (Expected)</span>
+              <div class="edu-coursework">
+                <strong>Relevant Coursework:</strong> Data Structures & Algorithms, DBMS, Object-Oriented Programming,
+                Computer Networks, Machine Learning, Deep Learning, Natural Language Processing, Cloud Computing,
+                Operating Systems.
+              </div>
             </div>
+
             <div class="edu-card glass-card">
               <div class="edu-card-header">
-                <h4>Higher Secondary (Class 12)</h4>
+                <h4>Higher Secondary School (Class 12)</h4>
                 <span class="edu-gpa">72.67%</span>
               </div>
-              <p class="edu-field">Science major</p>
-              <p class="edu-inst">Ord. Factory High School & Junior College</p>
+              <p class="edu-field">Science Major</p>
+              <p class="edu-inst">Ord. Factory High School & Junior College, Ambarnath</p>
               <span class="edu-timeline">Graduated 2023</span>
             </div>
+
             <div class="edu-card glass-card">
               <div class="edu-card-header">
                 <h4>Secondary School (Class 10)</h4>
-                <span class="edu-gpa">80.80%</span>
+                <span class="edu-gpa">91.40%</span>
               </div>
-              <p class="edu-field">General Curriculum</p>
-              <p class="edu-inst">ST. ALOYSIUS HIGH SCHOOL</p>
+              <p class="edu-field">State Board General Curriculum</p>
+              <p class="edu-inst">Ord. Factory High School & Junior College, Ambarnath</p>
               <span class="edu-timeline">Graduated 2021</span>
             </div>
           </div>
 
           <!-- Certifications & Personal Details -->
           <div class="cert-card-container">
-            <h3 class="subsection-title"><i class="fa-solid fa-certificate"></i> Certifications</h3>
+            <h3 class="subsection-title"><i class="fa-solid fa-certificate"></i> Certifications & Credentials</h3>
             <div class="certs-list">
               <div class="cert-item glass-card">
                 <i class="fa-solid fa-square-check cert-check"></i>
@@ -441,7 +540,7 @@
                 <i class="fa-solid fa-square-check cert-check"></i>
                 <div class="cert-info">
                   <h4>AI-ML Virtual Internship</h4>
-                  <span class="cert-org">EduSkills (Google for Developers) | 2024</span>
+                  <span class="cert-org">EduSkills × Google for Developers | 2024</span>
                 </div>
               </div>
               <div class="cert-item glass-card">
@@ -454,27 +553,27 @@
               <div class="cert-item glass-card">
                 <i class="fa-solid fa-square-check cert-check"></i>
                 <div class="cert-info">
-                  <h4>C++ & C, Python, C Programming</h4>
-                  <span class="cert-org">Spoken Tutorial IIT Bombay | 2024 - 2025</span>
+                  <h4>C++, C, Python Programming</h4>
+                  <span class="cert-org">Spoken Tutorial, IIT Bombay | 2024 – 2025</span>
                 </div>
               </div>
             </div>
 
-            <!-- Personal Details Block -->
+            <!-- Profile Details Block -->
             <div class="edu-card glass-card personal-details-card">
-              <h4 class="modal-section-title"><i class="fa-solid fa-user-tag"></i> Profile Details</h4>
+              <h4 class="modal-section-title"><i class="fa-solid fa-user-tag"></i> Profile & Interests</h4>
               <div class="details-list">
                 <div class="detail-row">
-                  <span class="det-lbl">Date of Birth:</span>
-                  <span class="det-val">13th May 2006</span>
+                  <span class="det-lbl">Focus Areas:</span>
+                  <span class="det-val">AI/ML Systems, SaaS Platforms, Cloud & Microservices</span>
+                </div>
+                <div class="detail-row">
+                  <span class="det-lbl">Interests:</span>
+                  <span class="det-val">Open-Source, Hackathons, Competitive Coding, IoT, Game Dev</span>
                 </div>
                 <div class="detail-row">
                   <span class="det-lbl">Languages:</span>
                   <span class="det-val">English, Hindi, Marathi</span>
-                </div>
-                <div class="detail-row">
-                  <span class="det-lbl">Hobbies:</span>
-                  <span class="det-val">Coding, Gaming, Tech Research</span>
                 </div>
               </div>
             </div>
@@ -493,8 +592,9 @@
         <div class="contact-grid">
           <div class="contact-card glass-card">
             <h3>Let's collaborate on your next project</h3>
-            <p>I am available for internships, contract roles, and full-stack/AI collaboration. Send a message, and I'll get back to you within 24 hours.</p>
-            
+            <p>I am available for internships, contract roles, and full-stack/AI collaboration. Send a message, and I'll
+              get back to you within 24 hours.</p>
+
             <div class="contact-details">
               <div class="contact-detail-item">
                 <i class="fa-solid fa-envelope"></i>
@@ -520,8 +620,10 @@
             </div>
 
             <div class="social-links">
-              <a href="https://github.com/Toshalzambare" target="_blank" aria-label="GitHub" class="magnetic"><i class="fa-brands fa-github"></i></a>
-              <a href="https://www.linkedin.com/in/toshal-zambare/" target="_blank" aria-label="LinkedIn" class="magnetic"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="https://github.com/Toshalzambare" target="_blank" aria-label="GitHub" class="magnetic"><i
+                  class="fa-brands fa-github"></i></a>
+              <a href="https://www.linkedin.com/in/toshal-zambare/" target="_blank" aria-label="LinkedIn"
+                class="magnetic"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
           </div>
 
@@ -541,7 +643,8 @@
               </div>
               <div class="form-group">
                 <label for="form-message">Message</label>
-                <textarea id="form-message" name="message" required rows="5" placeholder="Let's build something great..."></textarea>
+                <textarea id="form-message" name="message" required rows="5"
+                  placeholder="Let's build something great..."></textarea>
               </div>
               <button type="submit" class="btn btn-primary btn-submit magnetic">
                 <span>Send Message</span> <i class="fa-solid fa-paper-plane"></i>
@@ -569,32 +672,38 @@
   <div class="modal" id="resume-modal">
     <div class="modal-overlay"></div>
     <div class="modal-content glass-card resume-modal-content">
-      <button class="modal-close" id="resume-modal-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" id="resume-modal-close" aria-label="Close modal"><i
+          class="fa-solid fa-xmark"></i></button>
       <div class="modal-body resume-modal-body">
         <!-- Resume Selection View -->
         <div id="resume-selection-view" style="display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
           <div class="modal-header-section" style="margin-bottom: 1.5rem;">
             <h3 class="modal-project-title" style="margin-bottom: 0.25rem;">Select a Resume</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">Choose one of the specialized versions below to preview or download</p>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Choose one of the specialized versions below to
+              preview or download</p>
           </div>
           <div class="resume-grid" id="resume-grid">
             <!-- Dynamically populated resume cards -->
             <div class="resume-loading" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-              <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
+              <i class="fa-solid fa-spinner fa-spin"
+                style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
               <p>Fetching available resumes...</p>
             </div>
           </div>
         </div>
-        
+
         <!-- Resume Preview View -->
         <div id="resume-preview-view" style="display: none; flex-direction: column; height: 100%;">
           <div class="resume-preview-header">
-            <button id="resume-back-btn" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Resumes</button>
+            <button id="resume-back-btn" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to
+              Resumes</button>
             <span id="resume-preview-title">Resume Preview</span>
-            <a id="resume-preview-download-btn" href="#" download class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
+            <a id="resume-preview-download-btn" href="#" download class="btn btn-primary"><i
+                class="fa-solid fa-download"></i> Download</a>
           </div>
           <div class="resume-preview-body" style="flex-grow: 1; margin-top: 1rem; height: calc(100% - 60px);">
-            <iframe id="resume-iframe" src="" width="100%" height="100%" style="border: none; border-radius: 8px; background: #0b0f19;"></iframe>
+            <iframe id="resume-iframe" src="" width="100%" height="100%"
+              style="border: none; border-radius: 8px; background: #0b0f19;"></iframe>
           </div>
         </div>
       </div>
@@ -605,9 +714,11 @@
   <div class="modal" id="admin-preview-modal">
     <div class="modal-overlay"></div>
     <div class="modal-content glass-card resume-modal-content">
-      <button class="modal-close" id="admin-preview-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" id="admin-preview-close" aria-label="Close modal"><i
+          class="fa-solid fa-xmark"></i></button>
       <div class="modal-body resume-modal-body" id="admin-preview-body">
-        <iframe id="admin-preview-iframe" width="100%" height="100%" style="border: none; border-radius: 8px; background: white;"></iframe>
+        <iframe id="admin-preview-iframe" width="100%" height="100%"
+          style="border: none; border-radius: 8px; background: white;"></iframe>
       </div>
     </div>
   </div>
@@ -616,20 +727,25 @@
   <div class="modal" id="admin-gui-modal">
     <div class="modal-overlay"></div>
     <div class="modal-content glass-card admin-gui-modal-content">
-      <button class="modal-close" id="admin-gui-close" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" id="admin-gui-close" aria-label="Close modal"><i
+          class="fa-solid fa-xmark"></i></button>
       <div class="modal-body resume-modal-body">
         <!-- File Selection View -->
-        <div id="admin-gui-selection-view" style="display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
+        <div id="admin-gui-selection-view"
+          style="display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
           <div class="admin-gui-header">
             <div class="admin-gui-header-info">
-              <h3 class="modal-project-title"><i class="fa-solid fa-vault" style="margin-right: 0.5rem; color: var(--accent-gold);"></i>Encrypted File Manager</h3>
-              <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse, preview, and download your securely stored files</p>
+              <h3 class="modal-project-title"><i class="fa-solid fa-vault"
+                  style="margin-right: 0.5rem; color: var(--accent-gold);"></i>Encrypted File Manager</h3>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse, preview, and download your securely
+                stored files</p>
             </div>
           </div>
           <div class="resume-grid" id="admin-gui-grid">
             <!-- Dynamically populated file cards -->
             <div class="resume-loading" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-              <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
+              <i class="fa-solid fa-spinner fa-spin"
+                style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-gold);"></i>
               <p>Decrypting file index...</p>
             </div>
           </div>
@@ -638,12 +754,15 @@
         <!-- File Preview View -->
         <div id="admin-gui-preview-view" style="display: none; flex-direction: column; height: 100%;">
           <div class="resume-preview-header admin-gui-preview-header">
-            <button id="admin-gui-back-btn" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Files</button>
+            <button id="admin-gui-back-btn" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to
+              Files</button>
             <span id="admin-gui-preview-title">File Preview</span>
-            <a id="admin-gui-download-btn" href="#" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
+            <a id="admin-gui-download-btn" href="#" class="btn btn-primary"><i class="fa-solid fa-download"></i>
+              Download</a>
           </div>
           <div class="resume-preview-body" style="flex-grow: 1; margin-top: 1rem; height: calc(100% - 60px);">
-            <iframe id="admin-gui-iframe" src="" width="100%" height="100%" style="border: none; border-radius: 8px; background: #0b0f19;"></iframe>
+            <iframe id="admin-gui-iframe" src="" width="100%" height="100%"
+              style="border: none; border-radius: 8px; background: #0b0f19;"></iframe>
           </div>
         </div>
       </div>
@@ -663,4 +782,5 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>
